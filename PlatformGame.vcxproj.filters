@@ -13,10 +13,24 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Configuration FIles">
+      <UniqueIdentifier>{5c74613e-4228-4332-a3c8-fefd5d1d5920}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="PlatformGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="vcpkg.json">
+      <Filter>Configuration FIles</Filter>
+    </None>
+    <None Include="vcpkg-configuration.json">
+      <Filter>Configuration FIles</Filter>
+    </None>
+    <None Include=".gitignore">
+      <Filter>Configuration FIles</Filter>
+    </None>
   </ItemGroup>
 </Project>
