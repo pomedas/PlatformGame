@@ -4,10 +4,6 @@
 #include <iostream>
 #include <SDL2/SDL.h>
 
-// Constants for the screen width and height.
-const int screenWidth = 1280;
-const int screenHeight = 720;
-
 int main(int argc, char* argv[]) {
 
 	// Initialize the SDL video subsystem (returns 0 on success).
@@ -17,7 +13,10 @@ int main(int argc, char* argv[]) {
 		return 3; // Return 3 to indicate an error occurred.
 	}
 
-	// Create an SDL window: centered with the title 'Hello, SDL2!' and resizable	
+	// Create an SDL window: centered with the title 'Hello, SDL2!' and resizable
+	// Constants for the screen width and height.
+	const int screenWidth = 1280;
+	const int screenHeight = 720;
 	SDL_Window* window = SDL_CreateWindow("Hello, SDL2!", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, screenWidth, screenHeight, SDL_WINDOW_RESIZABLE);
 
 	if (!window) { // If the window could not be created, log the error and exit
@@ -39,15 +38,14 @@ int main(int argc, char* argv[]) {
 	int w, h;
 	SDL_GetWindowSize(window, &w, &h);
 
-	// Define a 100x100 pixel sqaure: { x, y, width, height }
-	// The squares's location will start at a random position on the screen.
+	// Define the position and sixe of a square { x, y, width, height }
 	int squareSize = 100;
-	SDL_Rect square{ 100,
-					  100,
+	SDL_Rect square{  300,
+					  300,
 					  squareSize,
 					  squareSize };
 
-	// Our main loop will continue to execute until running is set to false.
+	// The main loop will continue to execute until running is set to false.
 	bool running{ true };
 	// This flag will be set to true if the user presses a key or clicks the mouse.
 	bool userInput{ false };
