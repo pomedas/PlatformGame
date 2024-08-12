@@ -114,6 +114,9 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2main.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Assets" "$(OutDir)Assets"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -132,6 +135,9 @@
       <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2main.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /E /I /Y "$(ProjectDir)Assets" "$(OutDir)Assets"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include=".gitignore" />
