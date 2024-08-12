@@ -158,10 +158,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h" />
-    <ClInclude Include="src\Defs.h" />
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Input.h" />
-    <ClInclude Include="src\List.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\Render.h" />

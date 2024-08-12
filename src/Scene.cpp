@@ -5,8 +5,6 @@
 #include "Render.h"
 #include "Window.h"
 #include "Scene.h"
-
-#include "Defs.h"
 #include "Log.h"
 
 Scene::Scene() : Module()
@@ -32,7 +30,7 @@ bool Scene::Awake()
 bool Scene::Start()
 {
 	img = Engine::GetInstance().textures.get()->Load("Assets/Textures/test.png");
-	//Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg");
+	Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg");
 	return true;
 }
 
@@ -62,7 +60,7 @@ bool Scene::Update(float dt)
 	Engine::GetInstance().window.get()->GetWindowSize(windowW, windowH);
 
 	//Get the size of the texture
-	uint texW, texH;
+	int texW, texH;
 	Engine::GetInstance().textures.get()->GetSize(img, texW, texH);
 
 	// Renders the image in the center of the screen

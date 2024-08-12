@@ -1,12 +1,10 @@
 #pragma once
 
 #include "Module.h"
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_rect.h"
 
-//#define NUM_KEYS 352
 #define NUM_MOUSE_BUTTONS 5
-//#define LAST_KEYS_PRESSED_BUFFER 50
-
-struct SDL_Rect;
 
 enum EventWindow
 {

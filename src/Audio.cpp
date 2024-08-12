@@ -1,15 +1,8 @@
 #include "Audio.h"
-#include "Defs.h"
 #include "Log.h"
-#include "List.h"
 
-// NOTE: Recommended using: Additional Include Directories,
-// instead of 'hardcoding' library location path in code logic
-#include "sdl2/SDL.h"
-#include "sdl2/SDL_mixer.h"
-
-// NOTE: Library linkage is configured in Linker Options
-//#pragma comment(lib, "../Game/Source/External/SDL_mixer/libx86/SDL2_mixer.lib")
+#include "SDL2/SDL.h"
+#include "SDL2/SDL_mixer.h"
 
 Audio::Audio() : Module()
 {
@@ -70,11 +63,10 @@ bool Audio::CleanUp()
 		Mix_FreeMusic(music);
 	}
 
-	ListItem<Mix_Chunk*>* item;
-	for(item = fx.start; item != NULL; item = item->next)
-		Mix_FreeChunk(item->data);
-
-	fx.Clear();
+	for (const auto& fxItem : fx) {
+		Mix_FreeChunk(fxItem);
+	}
+	fx.clear();
 
 	Mix_CloseAudio();
 	Mix_Quit();
@@ -138,9 +130,9 @@ bool Audio::PlayMusic(const char* path, float fadeTime)
 }
 
 // Load WAV
-unsigned int Audio::LoadFx(const char* path)
+int Audio::LoadFx(const char* path)
 {
-	unsigned int ret = 0;
+	int ret = 0;
 
 	if(!active)
 		return 0;
@@ -153,24 +145,26 @@ unsigned int Audio::LoadFx(const char* path)
 	}
 	else
 	{
-		fx.Add(chunk);
-		ret = fx.Count();
+		fx.push_back(chunk);
+		ret = (int)fx.size();
 	}
 
 	return ret;
 }
 
 // Play WAV
-bool Audio::PlayFx(unsigned int id, int repeat)
+bool Audio::PlayFx(int id, int repeat)
 {
 	bool ret = false;
 
 	if(!active)
 		return false;
 
-	if(id > 0 && id <= fx.Count())
+	if(id > 0 && id <= fx.size())
 	{
-		Mix_PlayChannel(-1, fx[id - 1], repeat);
+		auto fxIt = fx.begin();
+		std::advance(fxIt, id-1);
+		Mix_PlayChannel(-1, *fxIt, repeat);
 	}
 
 	return ret;

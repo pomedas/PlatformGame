@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Module.h"
-
-struct SDL_Window;
+#include "SDL2/SDL_Video.h"
+#include "SDL2/SDL.h"
 
 class Window : public Module
 {

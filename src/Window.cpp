@@ -1,9 +1,6 @@
 #include "Window.h"
-#include "Defs.h"
 #include "Log.h"
-#include "sdl2/SDL.h"
 #include "Engine.h"
-
 
 Window::Window() : Module()
 {

@@ -3,8 +3,6 @@
 #include "Textures.h"
 #include "Log.h"
 
-#include "sdl2/SDL_image.h"
-
 Textures::Textures() : Module()
 {
 	name = "textures";
@@ -45,14 +43,11 @@ bool Textures::Start()
 bool Textures::CleanUp()
 {
 	LOG("Freeing textures and Image library");
-	ListItem<SDL_Texture*>* item;
-
-	for (item = textures.start; item != NULL; item = item->next)
-	{
-		SDL_DestroyTexture(item->data);
+	for (const auto& texture : textures) {
+		SDL_DestroyTexture(texture);
 	}
+	textures.clear();
 
-	textures.Clear();
 	IMG_Quit();
 	return true;
 }
@@ -79,14 +74,9 @@ SDL_Texture* const Textures::Load(const char* path)
 // Unload texture
 bool Textures::UnLoad(SDL_Texture* texture)
 {
-	ListItem<SDL_Texture*>* item;
-
-	for (item = textures.start; item != NULL; item = item->next)
-	{
-		if (texture == item->data)
-		{
-			SDL_DestroyTexture(item->data);
-			textures.Del(item);
+	for (const auto& _texture : textures) {
+		if (_texture == texture) {
+			SDL_DestroyTexture(texture);
 			return true;
 		}
 	}
@@ -105,14 +95,14 @@ SDL_Texture* const Textures::LoadSurface(SDL_Surface* surface)
 	}
 	else
 	{
-		textures.Add(texture);
+		textures.push_back(texture);
 	}
 
 	return texture;
 }
 
 // Retrieve size of a texture
-void Textures::GetSize(const SDL_Texture* texture, uint& width, uint& height) const
+void Textures::GetSize(const SDL_Texture* texture, int& width, int& height) const
 {
 	SDL_QueryTexture((SDL_Texture*)texture, NULL, NULL, (int*)&width, (int*)&height);
 }

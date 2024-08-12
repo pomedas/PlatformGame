@@ -1,11 +1,7 @@
 #include "Engine.h"
 #include "Input.h"
 #include "Window.h"
-
-#include "Defs.h"
 #include "Log.h"
-
-#include "SDL2/SDL.h"
 
 #define MAX_KEYS 300
 
@@ -111,12 +107,10 @@ bool Input::PreUpdate()
 
 			case SDL_MOUSEBUTTONDOWN:
 				mouseButtons[event.button.button - 1] = KEY_DOWN;
-				//LOG("Mouse button %d down", event.button.button-1);
 			break;
 
 			case SDL_MOUSEBUTTONUP:
 				mouseButtons[event.button.button - 1] = KEY_UP;
-				//LOG("Mouse button %d up", event.button.button-1);
 			break;
 
 			case SDL_MOUSEMOTION:
