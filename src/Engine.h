@@ -3,6 +3,8 @@
 #include <memory>
 #include <list>
 #include "Module.h"
+#include "Timer.h"
+#include "PerfTimer.h"
 
 
 // Modules
@@ -84,5 +86,27 @@ public:
 	std::shared_ptr<Scene> scene;
 
 private: 
-	float dt;
+
+	// Delta time
+	float dt; 
+	//Frames since startup
+	int frames;
+
+	// Calculate timing measures
+	// required variables are provided:
+	Timer startupTime;
+	PerfTimer frameTime;
+	PerfTimer lastSecFrameTime;
+
+	int frameCount = 0;
+	int framesPerSecond = 0;
+	int lastSecFrameCount = 0;
+
+	float averageFps = 0.0f;
+	int secondsSinceStartup = 0;
+
+	//Maximun frame duration in miliseconds.
+	int maxFrameDuration = 16;
+
+	std::string gameTitle = "Platformer Game";
 };
