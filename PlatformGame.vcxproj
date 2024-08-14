@@ -150,11 +150,13 @@
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\PlatformGame.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Render.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Textures.cpp" />
+    <ClCompile Include="src\Timer.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -166,10 +168,12 @@
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Module.h" />
+    <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Textures.h" />
+    <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>

@@ -74,7 +74,6 @@ bool Window::CleanUp()
 // Set new window title
 void Window::SetTitle(const char* new_title)
 {
-	//title.create(new_title);
 	SDL_SetWindowTitle(window, new_title);
 }
 

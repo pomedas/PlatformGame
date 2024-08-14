@@ -24,6 +24,6 @@ public:
 public:
 
 	//Declare player parameters
-	float speed = 5.0f;
+	float speed = 0.2f;
 	SDL_Texture* texture = NULL;
 };

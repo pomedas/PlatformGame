@@ -34,16 +34,16 @@ bool Player::Update(float dt)
 {
 	//Render the player texture and modify the position of the player using WSAD keys and render the texture
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
-		position.setY(position.getY() - speed);
+		position.setY(position.getY() - speed*dt);
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
-		position.setY(position.getY() + speed);
+		position.setY(position.getY() + speed*dt);
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
-		position.setX(position.getX() - speed);
+		position.setX(position.getX() - speed*dt);
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
-		position.setX(position.getX() + speed);
+		position.setX(position.getX() + speed*dt);
 
 	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY());
 	return true;
