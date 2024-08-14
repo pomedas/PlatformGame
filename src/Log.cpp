@@ -15,7 +15,7 @@ void Log(const char file[], int line, const char* format, ...)
     va_end(ap);
 
     // Construct the final log message
-    std::string logMessage = std::string("\n") + file + "(" + std::to_string(line) + ") : " + tmpString1;
+    std::string logMessage = std::string("") + file + "(" + std::to_string(line) + ") : " + tmpString1;
 
     // Print the formatted string to the standard error stream
     std::cerr << logMessage << std::endl;

@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Module.h"
-
-struct SDL_Texture;
+#include "Player.h"
 
 class Scene : public Module
 {
@@ -32,5 +31,5 @@ public:
 	bool CleanUp();
 
 private:
-	SDL_Texture* img;
+	Player* player;
 };

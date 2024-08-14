@@ -12,6 +12,7 @@ class Render;
 class Textures;
 class Audio;
 class Scene;
+class EntityManager;
 
 class Engine
 {
@@ -82,6 +83,7 @@ public:
 	std::shared_ptr<Textures> textures;
 	std::shared_ptr<Audio> audio;
 	std::shared_ptr<Scene> scene;
+	std::shared_ptr<EntityManager> entityManager;
 
 private: 
 	float dt;
