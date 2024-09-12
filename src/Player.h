@@ -2,8 +2,7 @@
 
 #include "Entity.h"
 #include "SDL2/SDL.h"
-
-struct SDL_Texture;
+#include "SDL2/SDL_render.h"
 
 class Player : public Entity
 {
@@ -25,5 +24,6 @@ public:
 
 	//Declare player parameters
 	float speed = 0.2f;
+	std::string textureName; 
 	SDL_Texture* texture = NULL;
 };

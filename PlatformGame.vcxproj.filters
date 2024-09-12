@@ -72,6 +72,9 @@
     <ClCompile Include="src\PerfTimer.cpp">
       <Filter>Source Files\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Map.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -119,5 +122,13 @@
     <ClInclude Include="src\PerfTimer.h">
       <Filter>Source Files\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Map.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="config.xml">
+      <Filter>Configuration FIles</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

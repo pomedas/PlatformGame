@@ -30,6 +30,10 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Load Parameters from config file
+	bool LoadParameters(xml_node parameters);
+
 private:
 	Player* player;
+	xml_node configParameters;
 };

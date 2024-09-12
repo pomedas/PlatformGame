@@ -5,7 +5,9 @@
 #include "Module.h"
 #include "Timer.h"
 #include "PerfTimer.h"
+#include "pugixml.hpp"
 
+using namespace pugi;
 
 // Modules
 class Window;
@@ -15,6 +17,7 @@ class Textures;
 class Audio;
 class Scene;
 class EntityManager;
+class Map;
 
 class Engine
 {
@@ -63,6 +66,9 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
+	// Load config file
+	bool LoadConfig();
+
 	std::list<std::shared_ptr<Module>> moduleList;
 
 public:
@@ -86,6 +92,7 @@ public:
 	std::shared_ptr<Audio> audio;
 	std::shared_ptr<Scene> scene;
 	std::shared_ptr<EntityManager> entityManager;
+	std::shared_ptr<Map> map;
 
 private: 
 
@@ -111,4 +118,7 @@ private:
 	int maxFrameDuration = 16;
 
 	std::string gameTitle = "Platformer Game";
+
+	// Variable to load and store the XML file in memory
+	xml_document configFile;
 };

@@ -2,9 +2,6 @@
 
 #include "Input.h"
 #include "Render.h"
-#include "tinyxml2.h"
-
-using namespace tinyxml2;
 
 enum class EntityType
 {
@@ -61,7 +58,6 @@ public:
 	std::string name;
 	EntityType type;
 	bool active = true;
-	XMLNode* parameters; // This is a pointer to the XML node that contains the parameters of the entity
 
 	// Possible properties, it depends on how generic we
 	// want our Entity class, maybe it's not renderable...

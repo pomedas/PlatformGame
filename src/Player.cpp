@@ -20,13 +20,12 @@ bool Player::Awake() {
 
 	//Initialize Player parameters
 	position = Vector2D(0, 0);
-
 	return true;
 }
 
 bool Player::Start() {
 
-	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/player1.png");
+	texture = Engine::GetInstance().textures.get()->Load(textureName.c_str());
 	return true;
 }
 

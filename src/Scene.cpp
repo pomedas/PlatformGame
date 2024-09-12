@@ -9,6 +9,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Player.h"
+#include "Map.h"
 
 Scene::Scene() : Module()
 {
@@ -25,15 +26,30 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
+	//Get the player texture name from the config file and assigns the value
+
+
+	//Get the map name from the config file and assigns the value
+	Engine::GetInstance().map.get()->mapName = configParameters.child("map").attribute("name").as_string();
+	Engine::GetInstance().map.get()->mapPath = configParameters.child("map").attribute("path").as_string();
+
+	//Instantiate the player using the entity manager
+	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+	player->textureName = configParameters.child("player").attribute("texturePath").as_string();
+
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
-	//Instantiate the player using the entity manager
-	player = (Player*) Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+	return true;
+}
 
+// Load Parameters from config file
+bool Scene::LoadParameters(xml_node parameters) {
+
+	configParameters = parameters;
 	return true;
 }
 

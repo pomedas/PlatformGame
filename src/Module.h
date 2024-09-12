@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+#include "pugixml.hpp"
+
+using namespace pugi;
 
 class Module
 {
@@ -46,6 +49,11 @@ public:
 
 	// Called before quitting
 	virtual bool CleanUp()
+	{
+		return true;
+	}
+
+	virtual bool LoadParameters(xml_node parameters)
 	{
 		return true;
 	}

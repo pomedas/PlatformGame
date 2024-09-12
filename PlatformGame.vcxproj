@@ -150,6 +150,7 @@
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\Input.cpp" />
     <ClCompile Include="src\Log.cpp" />
+    <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
     <ClCompile Include="src\PlatformGame.cpp" />
     <ClCompile Include="src\Player.cpp" />
@@ -167,6 +168,7 @@
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\Input.h" />
     <ClInclude Include="src\Log.h" />
+    <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\PerfTimer.h" />
     <ClInclude Include="src\Player.h" />
@@ -176,6 +178,9 @@
     <ClInclude Include="src\Timer.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="config.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

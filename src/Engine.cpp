@@ -11,6 +11,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "EntityManager.h"
+#include "Map.h"
 
 
 // Constructor
@@ -32,6 +33,7 @@ Engine::Engine() {
     textures = std::make_shared<Textures>();
     audio = std::make_shared<Audio>();
     scene = std::make_shared<Scene>();
+    map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
 
     // Ordered for awake / Start / Update
@@ -41,6 +43,8 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(textures));
     AddModule(std::static_pointer_cast<Module>(audio));
     AddModule(std::static_pointer_cast<Module>(scene));
+    // Add the map module
+    AddModule(std::static_pointer_cast<Module>(map));
     // Add the entity manager
     AddModule(std::static_pointer_cast<Module>(entityManager));
 
@@ -69,13 +73,26 @@ bool Engine::Awake() {
 
     LOG("Engine::Awake");
 
-    //Iterates the module list and calls Awake on each module
-    bool result = true;
-    for (const auto& module : moduleList) {
-        result =  module.get()->Awake();
-        if (!result) {
-			break;
-		}
+    bool result = LoadConfig();
+
+    if (result == true)
+    {
+        // Read the title from the config file and set the windows title 
+        // replace the inital string from the value of the title in the config file
+        // also read maxFrameDuration 
+        gameTitle = configFile.child("config").child("app").child("title").child_value();
+        window->SetTitle(gameTitle.c_str());
+        maxFrameDuration = configFile.child("config").child("app").child("maxFrameDuration").attribute("value").as_int();
+
+        //Iterates the module list and calls Awake on each module
+        bool result = true;
+        for (const auto& module : moduleList) {
+            result = module.get()->LoadParameters(configFile.child("config").child(module.get()->name.c_str()));
+            if(result) result = module.get()->Awake();
+            if (!result) {
+                break;
+            }
+        }
     }
 
     LOG("Timer App Awake(): %f", timer.ReadMSec());
@@ -248,4 +265,24 @@ bool Engine::PostUpdate()
     return result;
 }
 
+bool Engine::LoadConfig()
+{
+    bool ret = true;
 
+    //Load config.xml file using load_file() method from the xml_document class
+    // If the result is ok get the main node of the XML
+    // else, log the error
+    // check https://pugixml.org/docs/quickstart.html#loading
+
+    pugi::xml_parse_result result = configFile.load_file("config.xml");
+    if (result)
+    {
+        LOG("config.xml parsed without errors");
+    }
+    else
+    {
+        LOG("Error loading config.xml: %s", result.description());
+    }
+
+    return ret;
+}
