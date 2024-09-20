@@ -17,11 +17,9 @@ Engine::Engine() {
 
 	LOG("Constructor Engine::Engine");
 
-    //Measure the amount of ms that takes to execute the App constructor and LOG the result
-    Timer timer = Timer();
-    startupTime = Timer();
-    frameTime = PerfTimer();
-    lastSecFrameTime = PerfTimer();
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Engine constructor and LOG the result
+    // ...
+
     frames = 0;
 
     // Modules
@@ -43,10 +41,10 @@ Engine::Engine() {
     // Render last 
     AddModule(std::static_pointer_cast<Module>(render));
 
-    LOG("Timer App Constructor: %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
 }
 
-// Static method to get the instance of the Engine class, following the singletn pattern
+// Static method to get the instance of the Engine class, following the singleton pattern
 Engine& Engine::GetInstance() {
     static Engine instance; // Guaranteed to be destroyed and instantiated on first use
     return instance;
@@ -60,8 +58,8 @@ void Engine::AddModule(std::shared_ptr<Module> module){
 // Called before render is available
 bool Engine::Awake() {
 
-    //Measure the amount of ms that takes to execute the Awake and LOG the result
-    Timer timer = Timer();
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Awake and LOG the result
+    // ...
 
     LOG("Engine::Awake");
 
@@ -74,7 +72,7 @@ bool Engine::Awake() {
 		}
     }
 
-    LOG("Timer App Awake(): %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
 
     return result;
 }
@@ -82,8 +80,8 @@ bool Engine::Awake() {
 // Called before the first frame
 bool Engine::Start() {
 
-    //Measure the amount of ms that takes to execute the App Start() and LOG the result
-    Timer timer = Timer();
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Start() and LOG the result
+    // ...
 
     LOG("Engine::Start");
 
@@ -96,7 +94,7 @@ bool Engine::Start() {
         }
     }
 
-    LOG("Timer App Start(): %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
 
     return result;
 }
@@ -126,8 +124,8 @@ bool Engine::Update() {
 // Called before quitting
 bool Engine::CleanUp() {
 
-    //Measure the amount of ms that takes to execute the App CleanUp() and LOG the result
-    Timer timer = Timer();
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Start() and LOG the result
+    // ...
 
     LOG("Engine::CleanUp");
 
@@ -140,7 +138,7 @@ bool Engine::CleanUp() {
         }
     }
 
-    LOG("Timer App CleanUp(): %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
 
     return result;
 }
@@ -154,47 +152,23 @@ void Engine::PrepareUpdate()
 // ---------------------------------------------
 void Engine::FinishUpdate()
 {
-    //Cap the framerate of the gameloop
-    double currentDt = frameTime.ReadMs();
-    if (maxFrameDuration > 0 && currentDt < maxFrameDuration) {
-        int delay = (int)(maxFrameDuration - currentDt);
-
-        PerfTimer delayTimer = PerfTimer();
-        SDL_Delay(delay);
-        //Measure accurately the amount of time SDL_Delay() actually waits compared to what was expected
-        //LOG("We waited for %I32u ms and got back in %f ms",delay,delayTimer.ReadMs());
-    }
-
+    // L2: TODO 4: Calculate:
     // Amount of frames since startup
-    frameCount++;
-
     // Amount of time since game start (use a low resolution timer)
-    secondsSinceStartup = startupTime.ReadSec();
-
     // Amount of ms took the last update (dt)
-    dt = (float)frameTime.ReadMs();
-
     // Amount of frames during the last second
-    lastSecFrameCount++;
-
     // Average FPS for the whole game life
-    if (lastSecFrameTime.ReadMs() > 1000) {
-        lastSecFrameTime.Start();
-        averageFps = (averageFps + lastSecFrameCount) / 2;
-        framesPerSecond = lastSecFrameCount;
-        lastSecFrameCount = 0;
-    }
 
     // Shows the time measurements in the window title
     // check sprintf formats here https://cplusplus.com/reference/cstdio/printf/
-    std::stringstream ss;
-    ss << gameTitle << ": Av.FPS: " << std::fixed << std::setprecision(2) << averageFps
+    std::stringstream title;
+    title << gameTitle << ": Av.FPS: " << std::fixed << std::setprecision(2) << averageFps
         << " Last sec frames: " << framesPerSecond
         << " Last dt: " << std::fixed << std::setprecision(3) << dt
         << " Time since startup: " << secondsSinceStartup
         << " Frame Count: " << frameCount;
 
-    std::string titleStr = ss.str();
+    std::string titleStr = title.str();
 
     window.get()->SetTitle(titleStr.c_str());
 }
