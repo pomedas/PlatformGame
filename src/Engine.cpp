@@ -154,16 +154,8 @@ void Engine::PrepareUpdate()
 // ---------------------------------------------
 void Engine::FinishUpdate()
 {
-    //Cap the framerate of the gameloop
-    double currentDt = frameTime.ReadMs();
-    if (maxFrameDuration > 0 && currentDt < maxFrameDuration) {
-        int delay = (int)(maxFrameDuration - currentDt);
-
-        PerfTimer delayTimer = PerfTimer();
-        SDL_Delay(delay);
-        //Measure accurately the amount of time SDL_Delay() actually waits compared to what was expected
-        //LOG("We waited for %I32u ms and got back in %f ms",delay,delayTimer.ReadMs());
-    }
+    // L03: TODO 1: Cap the framerate of the gameloop
+    // L03: TODO 2: Measure accurately the amount of time SDL_Delay() actually waits compared to what was expected
 
     // Amount of frames since startup
     frameCount++;
