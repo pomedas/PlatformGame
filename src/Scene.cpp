@@ -23,12 +23,15 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
+	//L04: TODO 3b: Instantiate the player using the entity manager
+
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
+	// NOTE: We have to avoid the use of paths in the code, we will move it later to a config file
 	img = Engine::GetInstance().textures.get()->Load("Assets/Textures/test.png");
 	Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg");
 	return true;

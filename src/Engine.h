@@ -77,6 +77,8 @@ public:
 		EXIT
 	};
 
+	// L04: TODO 1: Add the EntityManager Module to App
+
 	// Modules
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Input> input;

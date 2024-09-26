@@ -33,4 +33,6 @@ public:
 
 private:
 	SDL_Texture* img;
+
+	//L03: TODO 3b: Declare a Player attribute
 };
