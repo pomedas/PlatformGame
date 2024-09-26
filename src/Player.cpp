@@ -19,13 +19,14 @@ Player::~Player() {
 bool Player::Awake() {
 
 	//L03: TODO 2: Initialize Player parameters
-
+	position = Vector2D(0, 0);
 	return true;
 }
 
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
+	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/player1.png");
 	return true;
 }
 
@@ -33,6 +34,19 @@ bool Player::Update(float dt)
 {
 	//L03: TODO 4: render the player texture and modify the position of the player using WSAD keys and render the texture
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
+		position.setY(position.getY() - speed);
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT)
+		position.setY(position.getY() + speed);
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT)
+		position.setX(position.getX() - speed);
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT)
+		position.setX(position.getX() + speed);
+
+	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY());
 	return true;
 }
 

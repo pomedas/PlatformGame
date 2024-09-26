@@ -6,6 +6,9 @@
 #include "Window.h"
 #include "Scene.h"
 #include "Log.h"
+#include "Entity.h"
+#include "EntityManager.h"
+#include "Player.h"
 
 Scene::Scene() : Module()
 {
@@ -24,6 +27,7 @@ bool Scene::Awake()
 	bool ret = true;
 
 	//L04: TODO 3b: Instantiate the player using the entity manager
+	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
 
 	return ret;
 }

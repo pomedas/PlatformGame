@@ -10,6 +10,7 @@
 #include "Textures.h"
 #include "Audio.h"
 #include "Scene.h"
+#include "EntityManager.h"
 
 
 // Constructor
@@ -33,6 +34,7 @@ Engine::Engine() {
     textures = std::make_shared<Textures>();
     audio = std::make_shared<Audio>();
     scene = std::make_shared<Scene>();
+    entityManager = std::make_shared<EntityManager>();
 
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
@@ -41,6 +43,7 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(textures));
     AddModule(std::static_pointer_cast<Module>(audio));
     AddModule(std::static_pointer_cast<Module>(scene));
+    AddModule(std::static_pointer_cast<Module>(entityManager));
 
     // Render last 
     AddModule(std::static_pointer_cast<Module>(render));

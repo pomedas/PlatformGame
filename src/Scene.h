@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Module.h"
+#include "Player.h"
 
 struct SDL_Texture;
 
@@ -35,4 +36,5 @@ private:
 	SDL_Texture* img;
 
 	//L03: TODO 3b: Declare a Player attribute
+	Player* player;
 };
