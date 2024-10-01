@@ -70,9 +70,15 @@ bool Engine::Awake() {
 
     LOG("Engine::Awake");
 
+    //L05 TODO 2: Add the LoadConfig() method here
+
+    // L05: TODO 3: Read the title from the config file and set the variable gameTitle, read maxFrameDuration and set the variable
+    // also read maxFrameDuration
+
     //Iterates the module list and calls Awake on each module
     bool result = true;
     for (const auto& module : moduleList) {
+        // L05: TODO 4: Call the LoadParameters function for each module
         result =  module.get()->Awake();
         if (!result) {
 			break;
@@ -248,6 +254,19 @@ bool Engine::PostUpdate()
     }
 
     return result;
+}
+
+// Load config from XML file
+bool Engine::LoadConfig()
+{
+    bool ret = true;
+
+    // L05: TODO 2: Load config.xml file using load_file() method from the xml_document class
+    // If the result is ok get the main node of the XML
+    // else, log the error
+    // check https://pugixml.org/docs/quickstart.html#loading
+
+    return ret;
 }
 
 

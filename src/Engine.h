@@ -63,6 +63,9 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
+	// Load config file
+	bool LoadConfig();
+
 	std::list<std::shared_ptr<Module>> moduleList;
 
 public:
@@ -113,4 +116,6 @@ private:
 	int maxFrameDuration = 16;
 
 	std::string gameTitle = "Platformer Game";
+
+	//L05 TODO 2: Declare a xml_document to load the config file
 };

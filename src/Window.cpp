@@ -28,12 +28,13 @@ bool Window::Awake()
 	{
 		// Create window
 		Uint32 flags = SDL_WINDOW_SHOWN;
+
+		//L05 TODO 6: Get the values from the config file
 		bool fullscreen = false;
 		bool borderless = false;
 		bool resizable = false;
 		bool fullscreen_window = false;
 
-		//TODO Get the values from the config file
 		width = 1280;
 		height = 720;
 		scale = 1;
