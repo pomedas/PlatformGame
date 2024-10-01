@@ -1,0 +1,19 @@
+<!-- Config file for the engine -->
+<config>
+  <engine>
+    <title>My platformer game</title>
+    <maxFrameDuration value="16"/>
+  </engine>
+
+  <render>
+    <vsync value="false"/>
+  </render>
+
+  <window>
+    <resolution width="1280" height="720" scale="1"/>
+    <fullscreen value="false"/>
+    <borderless value="false"/>
+    <resizable value="false"/>
+    <fullscreen_window value="false"/>
+  </window>
+</config>

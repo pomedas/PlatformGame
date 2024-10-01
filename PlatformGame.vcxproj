@@ -177,6 +177,9 @@
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Xml Include="config.xml" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

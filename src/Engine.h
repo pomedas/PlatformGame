@@ -5,7 +5,7 @@
 #include "Module.h"
 #include "Timer.h"
 #include "PerfTimer.h"
-
+#include "pugixml.hpp"
 
 // Modules
 class Window;
@@ -63,6 +63,9 @@ private:
 	// Call modules after each loop iteration
 	bool PostUpdate();
 
+	// Load config file
+	bool LoadConfig();
+
 	std::list<std::shared_ptr<Module>> moduleList;
 
 public:
@@ -78,8 +81,6 @@ public:
 		EXIT
 	};
 
-	// L04: TODO 1: Add the EntityManager Module to App
-
 	// Modules
 	std::shared_ptr<Window> window;
 	std::shared_ptr<Input> input;
@@ -87,6 +88,7 @@ public:
 	std::shared_ptr<Textures> textures;
 	std::shared_ptr<Audio> audio;
 	std::shared_ptr<Scene> scene;
+	// L04: TODO 1: Add the EntityManager Module to App
 	std::shared_ptr<EntityManager> entityManager;
 
 private: 
@@ -113,4 +115,7 @@ private:
 	int maxFrameDuration = 16;
 
 	std::string gameTitle = "Platformer Game";
+
+	//L05 TODO 2: Declare a xml_document to load the config file
+	pugi::xml_document configFile;
 };
