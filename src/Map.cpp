@@ -36,11 +36,27 @@ bool Map::Update(float dt)
 
     if (mapLoaded) {
 
-        // L06: TODO 6: Iterate all tilesets and draw all their 
-        // images in 0,0 (you should have only one tileset for now)
-        for(const auto& tileset : mapData.tilesets) {
-			Engine::GetInstance().render->DrawTexture(tileset->texture, 0, 0);
-		}
+        // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture()
+        // iterate all tiles in a layer
+        for (const auto& mapLayer : mapData.layers) {
+
+            for (int i = 0; i < mapData.width; i++) {
+                for (int j = 0; j < mapData.height; j++) {
+
+                    // L07 TODO 9: Complete the draw function
+                    
+                    //Get the gid from tile
+                    int gid = mapLayer->Get(i, j);
+                    //Get the Rect from the tileSetTexture;
+                    SDL_Rect tileRect = mapData.tilesets.front()->GetRect(gid);
+                    //Get the screen coordinates from the tile coordinates
+                    Vector2D mapCoord = MapToWorld(i, j);
+                    //Draw the texture
+                    Engine::GetInstance().render->DrawTexture(mapData.tilesets.front()->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
+
+                }
+            }
+        }
     }
 
     return ret;
@@ -56,6 +72,13 @@ bool Map::CleanUp()
         delete tileset;
     }
     mapData.tilesets.clear();
+
+    // L07 TODO 2: clean up all layer data
+    for (const auto& layer : mapData.layers)
+    {
+        delete layer;
+    }
+    mapData.layers.clear();
 
     return true;
 }
@@ -109,6 +132,32 @@ bool Map::Load(std::string path, std::string fileName)
 
 			mapData.tilesets.push_back(tileSet);
 		}
+
+        // L07: TODO 3: Iterate all layers in the TMX and load each of them
+        for (pugi::xml_node layerNode = mapFileXML.child("map").child("layer"); layerNode != NULL; layerNode = layerNode.next_sibling("layer")) {
+
+            // L07: TODO 4: Implement the load of a single layer 
+            //Load the attributes and saved in a new MapLayer
+            MapLayer* mapLayer = new MapLayer();
+            mapLayer->id = layerNode.attribute("id").as_int();
+            mapLayer->name = layerNode.attribute("name").as_string();
+            mapLayer->width = layerNode.attribute("width").as_int();
+            mapLayer->height = layerNode.attribute("height").as_int();
+
+            //Reserve the memory for the data 
+            mapLayer->tiles = new unsigned int[mapLayer->width * mapLayer->height];
+            memset(mapLayer->tiles, 0, mapLayer->width * mapLayer->height);
+
+            //Iterate over all the tiles and assign the values in the data array
+            int i = 0;
+            for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
+                mapLayer->tiles[i] = tileNode.attribute("gid").as_uint();
+                i++;
+            }
+
+            //add the layer to the map
+            mapData.layers.push_back(mapLayer);
+        }
         
         ret = true;
 
@@ -127,6 +176,13 @@ bool Map::Load(std::string path, std::string fileName)
                 LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
                 LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
             }
+            			
+            LOG("Layers----");
+
+            for (const auto& layer : mapData.layers) {
+                LOG("id : %d name : %s", layer->id, layer->name.c_str());
+				LOG("Layer width : %d Layer height : %d", layer->width, layer->height);
+            }   
         }
         else {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
@@ -140,4 +196,14 @@ bool Map::Load(std::string path, std::string fileName)
     return ret;
 }
 
+// L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
+Vector2D Map::MapToWorld(int x, int y) const
+{
+    Vector2D ret;
+
+    ret.setX(x * mapData.tileWidth);
+    ret.setY(y * mapData.tileHeight);
+
+    return ret;
+}
 
