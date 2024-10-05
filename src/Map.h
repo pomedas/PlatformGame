@@ -3,6 +3,13 @@
 #include "Module.h"
 #include <list>
 
+struct MapLayer
+{
+    // L07: TODO 1: Add the info to the MapLayer Struct
+
+    // L07: TODO 6: Add the info to the MapLayer Struct
+};
+
 // L06: TODO 2: Create a struct to hold information for a TileSet
 // Ignore Terrain Types and Tile Types for now, but we want the image!
 
@@ -17,6 +24,9 @@ struct TileSet
     int tileCount;
     int columns;
     SDL_Texture* texture;
+
+    // L07: TODO 7: Implement the method that receives the gid and returns a Rect
+
 };
 
 // L06: TODO 1: Create a struct needed to hold the information to Map node
@@ -27,6 +37,8 @@ struct MapData
 	int tileWidth;
 	int tileHeight;
     std::list<TileSet*> tilesets;
+
+    // L07: TODO 2: Add the info to the MapLayer Struct
 };
 
 class Map : public Module
@@ -52,6 +64,8 @@ public:
 
     // Load new map
     bool Load(std::string path, std::string mapFileName);
+
+    // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
 
 public: 
     std::string mapFileName;

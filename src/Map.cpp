@@ -36,11 +36,20 @@ bool Map::Update(float dt)
 
     if (mapLoaded) {
 
-        // L06: TODO 6: Iterate all tilesets and draw all their 
-        // images in 0,0 (you should have only one tileset for now)
-        for(const auto& tileset : mapData.tilesets) {
-			Engine::GetInstance().render->DrawTexture(tileset->texture, 0, 0);
-		}
+        // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture()
+        // iterate all tiles in a layer
+
+                    // L07 TODO 9: Complete the draw function
+                    
+                    //Get the gid from tile
+                    
+                    //Get the Rect from the tileSetTexture;
+                   
+                    //Get the screen coordinates from the tile coordinates
+                    
+                    //Draw the texture
+                  
+
     }
 
     return ret;
@@ -56,6 +65,8 @@ bool Map::CleanUp()
         delete tileset;
     }
     mapData.tilesets.clear();
+
+    // L07 TODO 2: clean up all layer data
 
     return true;
 }
@@ -109,6 +120,8 @@ bool Map::Load(std::string path, std::string fileName)
 
 			mapData.tilesets.push_back(tileSet);
 		}
+
+        // L07: TODO 3: Iterate all layers in the TMX and load each of them
         
         ret = true;
 
@@ -127,6 +140,7 @@ bool Map::Load(std::string path, std::string fileName)
                 LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
                 LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
             }
+            		
         }
         else {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
@@ -140,4 +154,5 @@ bool Map::Load(std::string path, std::string fileName)
     return ret;
 }
 
+// L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
 
