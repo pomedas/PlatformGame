@@ -41,6 +41,7 @@ bool Scene::Start()
 	Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg");
 
 	//L06 TODO 3: Call the function to load the map. 
+	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
 	return true;
 }

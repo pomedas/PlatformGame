@@ -38,6 +38,9 @@ bool Map::Update(float dt)
 
         // L06: TODO 6: Iterate all tilesets and draw all their 
         // images in 0,0 (you should have only one tileset for now)
+        for(const auto& tileset : mapData.tilesets) {
+			Engine::GetInstance().render->DrawTexture(tileset->texture, 0, 0);
+		}
     }
 
     return ret;
@@ -48,7 +51,11 @@ bool Map::CleanUp()
 {
     LOG("Unloading map");
 
-    // L05: TODO 2: Make sure you clean up any memory allocated from tilesets/map
+    // L06: TODO 2: Make sure you clean up any memory allocated from tilesets/map
+    for (const auto& tileset : mapData.tilesets) {
+        delete tileset;
+    }
+    mapData.tilesets.clear();
 
     return true;
 }
@@ -75,31 +82,51 @@ bool Map::Load(std::string path, std::string fileName)
 
         // L06: TODO 3: Implement LoadMap to load the map properties
         // retrieve the paremeters of the <map> node and store the into the mapData struct
-
-        //Fill mapData variable
+        mapData.width = mapFileXML.child("map").attribute("width").as_int();
+        mapData.height = mapFileXML.child("map").attribute("height").as_int();
+        mapData.tileWidth = mapFileXML.child("map").attribute("tilewidth").as_int();
+        mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
 
         // L06: TODO 4: Implement the LoadTileSet function to load the tileset properties
-        //ret = false; // Remove this line when implementing the function
-
+       
         //Iterate the Tileset
+        for(pugi::xml_node tilesetNode = mapFileXML.child("map").child("tileset"); tilesetNode!=NULL; tilesetNode = tilesetNode.next_sibling("tileset"))
+		{
+            //Load Tileset attributes
+			TileSet* tileSet = new TileSet();
+            tileSet->firstGid = tilesetNode.attribute("firstgid").as_int();
+            tileSet->name = tilesetNode.attribute("name").as_string();
+            tileSet->tileWidth = tilesetNode.attribute("tilewidth").as_int();
+            tileSet->tileHeight = tilesetNode.attribute("tileheight").as_int();
+            tileSet->spacing = tilesetNode.attribute("spacing").as_int();
+            tileSet->margin = tilesetNode.attribute("margin").as_int();
+            tileSet->tileCount = tilesetNode.attribute("tilecount").as_int();
+            tileSet->columns = tilesetNode.attribute("columns").as_int();
 
-          //Load Tileset attributes
+			//Load the tileset image
+			std::string imgName = tilesetNode.child("image").attribute("source").as_string();
+            tileSet->texture = Engine::GetInstance().textures->Load((mapPath+imgName).c_str());
 
-          //Load Tileset image
+			mapData.tilesets.push_back(tileSet);
+		}
+        
+        ret = true;
 
         // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
         if (ret == true)
         {
-            LOG("Successfully parsed map XML file :%s", "");
-            LOG("width : %d height : %d", 0, 0);
-            LOG("tile_width : %d tile_height : %d", 0, 0);
+            LOG("Successfully parsed map XML file :%s", fileName.c_str());
+            LOG("width : %d height : %d", mapData.width, mapData.height);
+            LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
 
             LOG("Tilesets----");
 
             //iterate the tilesets
-            LOG("name : %s firstgid : %d", "", 0);
-            LOG("tile width : %d tile height : %d", 0, 0);
-            LOG("spacing : %d margin : %d", 0, 0);
+            for (const auto& tileset : mapData.tilesets) {
+                LOG("name : %s firstgid : %d", tileset->name.c_str(), tileset->firstGid);
+                LOG("tile width : %d tile height : %d", tileset->tileWidth, tileset->tileHeight);
+                LOG("spacing : %d margin : %d", tileset->spacing, tileset->margin);
+            }
         }
         else {
             LOG("Error while parsing map file: %s", mapPathName.c_str());
