@@ -11,6 +11,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "EntityManager.h"
+#include "Map.h"
 
 
 // Constructor
@@ -34,6 +35,7 @@ Engine::Engine() {
     textures = std::make_shared<Textures>();
     audio = std::make_shared<Audio>();
     scene = std::make_shared<Scene>();
+    map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
 
     // Ordered for awake / Start / Update
@@ -43,6 +45,7 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(textures));
     AddModule(std::static_pointer_cast<Module>(audio));
     AddModule(std::static_pointer_cast<Module>(scene));
+    AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(entityManager));
 
     // Render last 

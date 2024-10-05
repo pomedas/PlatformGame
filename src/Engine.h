@@ -15,6 +15,7 @@ class Textures;
 class Audio;
 class Scene;
 class EntityManager;
+class Map;
 
 class Engine
 {
@@ -90,6 +91,7 @@ public:
 	std::shared_ptr<Scene> scene;
 	// L04: TODO 1: Add the EntityManager Module to App
 	std::shared_ptr<EntityManager> entityManager;
+	std::shared_ptr<Map> map;
 
 private: 
 

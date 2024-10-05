@@ -9,6 +9,7 @@
 #include "Entity.h"
 #include "EntityManager.h"
 #include "Player.h"
+#include "Map.h"
 
 Scene::Scene() : Module()
 {
@@ -38,6 +39,9 @@ bool Scene::Start()
 	// NOTE: We have to avoid the use of paths in the code, we will move it later to a config file
 	img = Engine::GetInstance().textures.get()->Load("Assets/Textures/test.png");
 	Engine::GetInstance().audio.get()->PlayMusic("Assets/Audio/Music/music_spy.ogg");
+
+	//L06 TODO 3: Call the function to load the map. 
+
 	return true;
 }
 
