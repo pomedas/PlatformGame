@@ -145,15 +145,9 @@ bool Map::Load(std::string path, std::string fileName)
             mapLayer->width = layerNode.attribute("width").as_int();
             mapLayer->height = layerNode.attribute("height").as_int();
 
-            //Reserve the memory for the data 
-            mapLayer->tiles = new unsigned int[mapLayer->width * mapLayer->height];
-            memset(mapLayer->tiles, 0, mapLayer->width * mapLayer->height);
-
             //Iterate over all the tiles and assign the values in the data array
-            int i = 0;
             for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
-                mapLayer->tiles[i] = tileNode.attribute("gid").as_uint();
-                i++;
+                mapLayer->tiles.push_back(tileNode.attribute("gid").as_int());
             }
 
             //add the layer to the map
