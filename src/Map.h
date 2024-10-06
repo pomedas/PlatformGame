@@ -7,7 +7,7 @@ struct MapLayer
 {
     // L07: TODO 1: Add the info to the MapLayer Struct
 
-    // L07: TODO 6: Add the info to the MapLayer Struct
+    // L07: TODO 6: Short function to get the gid value of i,j
 };
 
 // L06: TODO 2: Create a struct to hold information for a TileSet
