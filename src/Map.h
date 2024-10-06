@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include <list>
+#include <vector>
 
 struct MapLayer
 {
@@ -10,12 +11,12 @@ struct MapLayer
     std::string name;
     int width;
     int height;
-    unsigned int* tiles;
+    std::vector<int> tiles;
 
-    // L07: TODO 6: Add the info to the MapLayer Struct
-    unsigned int Get(int x, int y) const
+    // L07: TODO 6: Short function to get the gid value of i,j
+    unsigned int Get(int i, int j) const
     {
-        return tiles[(y * width) + x];
+        return tiles[(j * width) + i];
     }
 };
 
