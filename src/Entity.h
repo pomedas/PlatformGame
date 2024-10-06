@@ -6,8 +6,11 @@
 enum class EntityType
 {
 	PLAYER,
+	ITEM,
 	UNKNOWN
 };
+
+class PhysBody;
 
 class Entity
 {
@@ -52,6 +55,10 @@ public:
 			CleanUp();
 		}
 	}
+
+	virtual void OnCollision(PhysBody* physA, PhysBody* physB) {
+
+	};
 
 public:
 

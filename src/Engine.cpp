@@ -12,7 +12,7 @@
 #include "Scene.h"
 #include "EntityManager.h"
 #include "Map.h"
-
+#include "Physics.h"
 
 // Constructor
 Engine::Engine() {
@@ -34,6 +34,8 @@ Engine::Engine() {
     render = std::make_shared<Render>();
     textures = std::make_shared<Textures>();
     audio = std::make_shared<Audio>();
+    // L08: TODO 2: Add Physics module
+    physics = std::make_shared<Physics>();
     scene = std::make_shared<Scene>();
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
@@ -44,6 +46,8 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(input));
     AddModule(std::static_pointer_cast<Module>(textures));
     AddModule(std::static_pointer_cast<Module>(audio));
+    // L08: TODO 2: Add Physics module
+    AddModule(std::static_pointer_cast<Module>(physics));
     AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));

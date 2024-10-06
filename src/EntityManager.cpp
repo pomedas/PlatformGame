@@ -4,6 +4,7 @@
 #include "Textures.h"
 #include "Scene.h"
 #include "Log.h"
+#include "Item.h"
 
 EntityManager::EntityManager() : Module()
 {
@@ -70,6 +71,9 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	{
 	case EntityType::PLAYER:
 		entity = new Player();
+		break;
+	case EntityType::ITEM:
+		entity = new Item();
 		break;
 	default:
 		break;

@@ -149,9 +149,11 @@
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\EntityManager.cpp" />
     <ClCompile Include="src\Input.cpp" />
+    <ClCompile Include="src\Item.cpp" />
     <ClCompile Include="src\Log.cpp" />
     <ClCompile Include="src\Map.cpp" />
     <ClCompile Include="src\PerfTimer.cpp" />
+    <ClCompile Include="src\Physics.cpp" />
     <ClCompile Include="src\PlatformGame.cpp" />
     <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Render.cpp" />
@@ -167,10 +169,12 @@
     <ClInclude Include="src\Entity.h" />
     <ClInclude Include="src\EntityManager.h" />
     <ClInclude Include="src\Input.h" />
+    <ClInclude Include="src\Item.h" />
     <ClInclude Include="src\Log.h" />
     <ClInclude Include="src\Map.h" />
     <ClInclude Include="src\Module.h" />
     <ClInclude Include="src\PerfTimer.h" />
+    <ClInclude Include="src\Physics.h" />
     <ClInclude Include="src\Player.h" />
     <ClInclude Include="src\Render.h" />
     <ClInclude Include="src\Scene.h" />
