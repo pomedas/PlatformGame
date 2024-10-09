@@ -38,7 +38,7 @@ struct MapData
 	int tileHeight;
     std::list<TileSet*> tilesets;
 
-    // L07: TODO 2: Add the info to the MapLayer Struct
+    // L07: TODO 2: declare a list of MapLayer  in the MapData struct
 };
 
 class Map : public Module

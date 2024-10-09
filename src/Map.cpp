@@ -122,6 +122,7 @@ bool Map::Load(std::string path, std::string fileName)
 		}
 
         // L07: TODO 3: Iterate all layers in the TMX and load each of them
+            // L07: TODO 4: load the info of a single layer
         
         ret = true;
 
