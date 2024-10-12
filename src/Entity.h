@@ -60,6 +60,10 @@ public:
 
 	};
 
+	virtual void OnCollisionEnd(PhysBody* physA, PhysBody* physB) {
+
+	};
+
 public:
 
 	std::string name;
