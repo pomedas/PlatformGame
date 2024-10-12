@@ -47,15 +47,32 @@ bool Player::Update(float dt)
 	// L08 TODO 5: Add physics to the player - updated player position using physics
 	b2Vec2 velocity = b2Vec2(0, -GRAVITY_Y);
 
+	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -0.2 * dt;
 	}
 
+	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = 0.2 * dt;
 	}
+	
+	//Jump
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+		// Apply an initial upward force
+		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+		isJumping = true;
+	}
 
+	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
+	if(isJumping == true)
+	{
+		velocity = pbody->body->GetLinearVelocity();
+	}
+
+	// Apply the velocity to the player
 	pbody->body->SetLinearVelocity(velocity);
+
 	b2Transform pbodyPos = pbody->body->GetTransform();
 	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
 	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
@@ -77,12 +94,32 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
+		//reset the jump flag when touching the ground
+		isJumping = false;
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
+		break;
+	default:
+		break;
+	}
+}
+
+void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+{
+	switch (physB->ctype)
+	{
+	case ColliderType::PLATFORM:
+		LOG("End Collision PLATFORM");
+		break;
+	case ColliderType::ITEM:
+		LOG("End Collision ITEM");
+		break;
+	case ColliderType::UNKNOWN:
+		LOG("End Collision UNKNOWN");
 		break;
 	default:
 		break;
