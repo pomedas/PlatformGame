@@ -166,8 +166,6 @@ bool Map::Load(std::string path, std::string fileName)
         PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
         c3->ctype = ColliderType::PLATFORM;
 
-
-        
         ret = true;
 
         // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
