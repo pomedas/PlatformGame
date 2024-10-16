@@ -3,6 +3,7 @@
 #include "Entity.h"
 #include "SDL2/SDL.h"
 #include "Box2D/Box2D.h"
+#include "Animation.h"
 
 struct SDL_Texture;
 
@@ -27,6 +28,10 @@ public:
 
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+	void SetParameters(pugi::xml_node parameters) {
+		this->parameters = parameters;
+	}
+
 public:
 
 	//Declare player parameters
@@ -41,4 +46,8 @@ public:
 	PhysBody* pbody;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
+
+	pugi::xml_node parameters;
+	Animation* currentAnimation = nullptr;
+	Animation idle;
 };
