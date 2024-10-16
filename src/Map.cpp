@@ -257,15 +257,4 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
-// L09: TODO 7: Implement a method to get the value of a custom property
-Properties::Property* Properties::GetProperty(const char* name)
-{
-    for (const auto& property : propertyList) {
-        if (property->name == name) {
-			return property;
-		}
-    }
-
-    return nullptr;
-}
 

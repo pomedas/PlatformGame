@@ -26,7 +26,16 @@ struct Properties
     }
 
     // L09: DONE 7: Method to ask for the value of a custom property
-    Property* GetProperty(const char* name);
+    Property* GetProperty(const char* name)
+    {
+        for (const auto& property : propertyList) {
+            if (property->name == name) {
+                return property;
+            }
+        }
+
+        return nullptr;
+    }
 
 };
 
