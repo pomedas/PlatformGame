@@ -9,24 +9,10 @@ struct Properties
 {
     struct Property
     {
-        std::string name;
-        bool value; //We assume that we are going to work only with bool for the moment
+
     };
 
-    std::list<Property*> propertyList;
-
-    ~Properties()
-    {
-        for (const auto& property : propertyList)
-        {
-            delete property;
-        }
-
-        propertyList.clear();
-    }
-
-    // L09: DONE 7: Method to ask for the value of a custom property
-    Property* GetProperty(const char* name);
+    // L09: TODO 7: Implement a method to get the value of a custom property
 
 };
 
