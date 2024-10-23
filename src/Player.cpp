@@ -52,12 +52,12 @@ bool Player::Update(float dt)
 
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * dt;
+		velocity.x = -0.2 * 16;
 	}
 
 	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * dt;
+		velocity.x = 0.2 * 16;
 	}
 	
 	//Jump
