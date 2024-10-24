@@ -161,7 +161,7 @@ PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bo
 	// Create our custom PhysBody class
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	//b->SetUserData(pbody);
+	b->GetUserData().pointer = (uintptr_t)pbody;
 	pbody->width = width;
 	pbody->height = height;
 
@@ -204,7 +204,7 @@ PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType typ
 	// Create our custom PhysBody class
 	PhysBody* pbody = new PhysBody();
 	pbody->body = b;
-	//b->SetUserData(pbody);
+	b->GetUserData().pointer = (uintptr_t)pbody;
 	pbody->width = pbody->height = 0;
 
 	// Return our PhysBody class
