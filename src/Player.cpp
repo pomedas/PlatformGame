@@ -7,6 +7,7 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Physics.h"
+#include "EntityManager.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -102,6 +103,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
+		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
+		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
@@ -120,7 +123,6 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	case ColliderType::ITEM:
 		LOG("End Collision ITEM");
-		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("End Collision UNKNOWN");
