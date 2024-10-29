@@ -134,6 +134,8 @@ bool Map::Load(std::string path, std::string fileName)
         mapData.tileWidth = mapFileXML.child("map").attribute("tilewidth").as_int();
         mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
 
+        // L10: TODO 2: Define a property to store the MapType and Load it from the map
+
         // L06: TODO 4: Implement the LoadTileSet function to load the tileset properties
        
         //Iterate the Tileset
@@ -244,6 +246,14 @@ Vector2D Map::MapToWorld(int x, int y) const
 
     ret.setX(x * mapData.tileWidth);
     ret.setY(y * mapData.tileHeight);
+
+    return ret;
+}
+
+// L10: TODO 5: Add method WorldToMap to obtain  map coordinates from screen coordinates 
+Vector2D Map::WorldToMap(int x, int y) {
+
+    Vector2D ret(0, 0);
 
     return ret;
 }

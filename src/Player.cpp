@@ -20,8 +20,6 @@ Player::~Player() {
 
 bool Player::Awake() {
 
-	//L03: TODO 2: Initialize Player parameters
-	position = Vector2D(96, 96);
 	return true;
 }
 
@@ -47,6 +45,9 @@ bool Player::Start() {
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
+	// Set the gravity of the body
+	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
+
 	//initialize audio effect
 	pickCoinFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/retro-video-game-coin-pickup-38299.ogg");
 
@@ -58,6 +59,10 @@ bool Player::Update(float dt)
 	// L08 TODO 5: Add physics to the player - updated player position using physics
 	b2Vec2 velocity = b2Vec2(0, pbody->body->GetLinearVelocity().y);
 
+	if (!parameters.attribute("gravity").as_bool()) {
+		velocity = b2Vec2(0,0);
+	}
+
 	// Move left
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -0.2 * 16;
@@ -66,6 +71,16 @@ bool Player::Update(float dt)
 	// Move right
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = 0.2 * 16;
+	}
+
+	// Move Up
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
+		velocity.y = -0.2 * 16;
+	}
+
+	// Move down
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
+		velocity.y = 0.2 * 16;
 	}
 	
 	//Jump
@@ -106,7 +121,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
-		//reset the jump flag when touching the ground
 		isJumping = false;
 		break;
 	case ColliderType::ITEM:

@@ -21,7 +21,7 @@
   <scene>
     <map path="Assets/Maps/" name="MapTemplate.tmx"/>
     <entities>
-      <player x="96" y="96" w="32" h ="32" texture="Assets/Textures/player/Idle.png">
+      <player x="96" y="96" w="32" h ="32" texture="Assets/Textures/player/Idle.png" gravity="true">
         <animations>
           <idle loop="true" speed ="0.5">
             <frame x="0" y="0" w="32" h="32"/>
@@ -36,6 +36,15 @@
           </idle>
         </animations>
       </player>
+      <items>
+        <item name="coin" x="200" y="672" w="32" h="32" texture="Assets/Textures/goldCoin.png" gravity="true">
+          <animations>
+            <idle loop="true" speed ="0.5">
+              <frame x="0" y="0" w="32" h="32"/>
+            </idle>
+          </animations>
+        </item>
+      </items>
     </entities>
   </scene>
 	

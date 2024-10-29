@@ -15,7 +15,6 @@
 Scene::Scene() : Module()
 {
 	name = "scene";
-	img = nullptr;
 }
 
 // Destructor
@@ -33,8 +32,12 @@ bool Scene::Awake()
 	player->SetParameters(configParameters.child("entities").child("player"));
 	
 	//L08 Create a new item using the entity manager and set the position to (200, 672) to test
-	Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
-	item->position = Vector2D(200, 672);
+	for(pugi::xml_node itemNode = configParameters.child("entities").child("items").child("item"); itemNode; itemNode = itemNode.next_sibling("item"))
+	{
+		Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+		item->SetParameters(itemNode);
+	}
+
 	return ret;
 }
 
@@ -43,6 +46,15 @@ bool Scene::Start()
 {
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load(configParameters.child("map").attribute("path").as_string(), configParameters.child("map").attribute("name").as_string());
+
+	// Texture to highligh mouse position 
+	mouseTileTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/tileSelection.png");
+
+	// Initalize the camera position in the center of the map
+	int w, h;
+	Engine::GetInstance().window.get()->GetWindowSize(w, h);
+	Engine::GetInstance().render.get()->camera.x = 0;
+	Engine::GetInstance().render.get()->camera.y = 0;
 
 	return true;
 }
@@ -71,6 +83,10 @@ bool Scene::Update(float dt)
 	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		Engine::GetInstance().render.get()->camera.x += ceil(camSpeed * dt);
 
+
+	// L10 TODO 6: Implement a method that repositions the player in the map with a mouse click
+
+
 	return true;
 }
 
@@ -89,8 +105,5 @@ bool Scene::PostUpdate()
 bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
-
-	SDL_DestroyTexture(img);
-
 	return true;
 }
