@@ -38,7 +38,8 @@ bool Item::Start() {
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::ITEM;
 
-	pbody->body->SetGravityScale(0); // We don't want the item to be affected by gravity
+	// Set the gravity of the body
+	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
 
 	return true;
 }
