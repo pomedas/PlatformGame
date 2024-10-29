@@ -19,23 +19,33 @@
   </window>
 
   <scene>
-    <map path="Assets/Maps/" name="MapTemplate.tmx"/>
+    <map path="Assets/Maps/" name="iso.tmx"/>
     <entities>
-      <player x="96" y="96" w="32" h ="32" texture="Assets/Textures/player/Idle.png">
+      <player x="96" y="96" w="64" h ="64" texture="Assets/Textures/isometric.png">
         <animations>
           <idle loop="true" speed ="0.5">
-            <frame x="0" y="0" w="32" h="32"/>
-            <frame x="32" y="0" w="32" h="32"/>
-            <frame x="64" y="0" w="32" h="32"/>
-            <frame x="96" y="0" w="32" h="32"/>
-            <frame x="128" y="0" w="32" h="32"/>
-            <frame x="160" y="0" w="32" h="32"/>
-            <frame x="192" y="0" w="32" h="32"/>
-            <frame x="224" y="0" w="32" h="32"/>
-            <frame x="256" y="0" w="32" h="32"/>
+            <frame x="512" y="512" w="64" h="64"/>
           </idle>
         </animations>
       </player>
+      <items>
+        <item name="coin" x="128" y="128" w="64" h="64" texture="Assets/Textures/isometric.png">
+          <animations>
+            <idle loop="true" speed ="0.5">
+              <frame x="320" y="384" w="64" h="64"/>
+            </idle>
+          </animations>
+        </item>
+        <item name="coin" x="128" y="250" w="64" h="64" texture="Assets/Textures/isometric.png">
+          <animations>
+            <idle loop="true" speed ="0.1">
+              <frame x="512" y="640" w="64" h="64"/>
+              <frame x="576" y="640" w="64" h="64"/>
+              <frame x="640" y="640" w="64" h="64"/>
+            </idle>
+          </animations>
+        </item>
+      </items>
     </entities>
   </scene>
 	

@@ -4,6 +4,13 @@
 #include <list>
 #include <vector>
 
+// L10: TODO 2: Define a property to store the Map Orientation and Load it from the map
+enum MapOrientation
+{
+    ORTOGRAPHIC = 0,
+    ISOMETRIC
+};
+
 // L09: TODO 5: Add attributes to the property structure
 struct Properties
 {
@@ -85,6 +92,8 @@ struct MapData
 	int tileWidth;
 	int tileHeight;
     std::list<TileSet*> tilesets;
+    // L10: TODO 2: Define a property to store the Map Orientation and Load it from the map
+    MapOrientation orientation;
 
     // L07: TODO 2: Add the info to the MapLayer Struct
     std::list<MapLayer*> layers;
@@ -117,11 +126,23 @@ public:
     // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
     Vector2D MapToWorld(int x, int y) const;
 
+    // L10: TODO 5: Add method WorldToMap to obtain  map coordinates from screen coordinates 
+    Vector2D WorldToMap(int x, int y);
+
     // L09: TODO 2: Implement function to the Tileset based on a tile id
     TileSet* GetTilesetFromTileId(int gid) const;
 
     // L09: TODO 6: Load a group of properties 
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
+
+    int GetTileWidth() {
+        return mapData.tileWidth;
+    }
+
+    int GetTileHeight() {
+        return mapData.tileHeight;
+    }
+
 
 public: 
     std::string mapFileName;
