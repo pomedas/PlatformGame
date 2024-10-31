@@ -32,6 +32,8 @@ public:
 		this->parameters = parameters;
 	}
 
+	void SetPosition(Vector2D pos);
+
 public:
 
 	//Declare player parameters

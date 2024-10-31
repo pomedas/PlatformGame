@@ -53,7 +53,7 @@ bool Scene::Start()
 	// Initalize the camera position in the center of the map
 	int w, h;
 	Engine::GetInstance().window.get()->GetWindowSize(w, h);
-	Engine::GetInstance().render.get()->camera.x = w /2;
+	Engine::GetInstance().render.get()->camera.x = w/ 2;
 	Engine::GetInstance().render.get()->camera.y = 0;
 
 	return true;
@@ -87,20 +87,23 @@ bool Scene::Update(float dt)
 	// L09 TODO 6: Implement a method that repositions the player in the map with a mouse click
 
 	// Get the mouse position and obtain the map coordinate
+	// L10 TODO 6: Implement a method that repositions the player in the map with a mouse click
+	
+	//Get mouse position and obtain the map coordinate
 	Vector2D mousePos = Engine::GetInstance().input.get()->GetMousePosition();
 	Vector2D mouseTile = Engine::GetInstance().map.get()->WorldToMap(mousePos.getX() - Engine::GetInstance().render.get()->camera.x,
-																	 mousePos.getY() - Engine::GetInstance().render.get()->camera.y);
+																     mousePos.getY() - Engine::GetInstance().render.get()->camera.y);
 
-	// Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
-	Vector2D highlightedTileWorld = Engine::GetInstance().map.get()->MapToWorld(mouseTile.getX(), mouseTile.getY());
-	Engine::GetInstance().render.get()->DrawTexture(mouseTileTex, 
-													highlightedTileWorld.getX() - Engine::GetInstance().map.get()->GetTileWidth() / 2, 
-													highlightedTileWorld.getY());
+
+	//Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
+	Vector2D highlightTile = Engine::GetInstance().map.get()->MapToWorld(mouseTile.getX(),mouseTile.getY());
+	Engine::GetInstance().render.get()->DrawTexture(mouseTileTex,
+													highlightTile.getX() - Engine::GetInstance().map.get()->GetTileWidth() / 2,
+													highlightTile.getY());
 
 	//If mouse button is pressed modify player position
 	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
-		player->position = Vector2D(highlightedTileWorld.getX() - Engine::GetInstance().map.get()->GetTileWidth() / 2,
-									highlightedTileWorld.getY() - Engine::GetInstance().map.get()->GetTileHeight());
+		player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
 	}
 
 	return true;
