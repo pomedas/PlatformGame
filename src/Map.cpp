@@ -305,6 +305,17 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
+MapLayer* Map::GetNavigationLayer() {
+    for (const auto& layer : mapData.layers) {
+		if (layer->properties.GetProperty("Navigation") != NULL && 
+            layer->properties.GetProperty("Navigation")->value) {
+			return layer;
+		}
+	}
+
+	return nullptr;
+}
+
 // L09: TODO 7: Implement a method to get the value of a custom property
 Properties::Property* Properties::GetProperty(const char* name)
 {
@@ -316,4 +327,6 @@ Properties::Property* Properties::GetProperty(const char* name)
 
     return nullptr;
 }
+
+
 

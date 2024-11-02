@@ -135,6 +135,14 @@ public:
     // L09: TODO 6: Load a group of properties 
     bool LoadProperties(pugi::xml_node& node, Properties& properties);
 
+    int GetWidth() {
+        return mapData.width;
+    }
+
+    int GetHeight() {
+        return mapData.height;
+    }
+
     int GetTileWidth() {
         return mapData.tileWidth;
     }
@@ -142,6 +150,8 @@ public:
     int GetTileHeight() {
         return mapData.tileHeight;
     }
+
+    MapLayer* GetNavigationLayer();
 
 
 public: 

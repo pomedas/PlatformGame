@@ -34,6 +34,8 @@ public:
 
 	void SetPosition(Vector2D pos);
 
+	Vector2D GetPosition();
+
 public:
 
 	//Declare player parameters
