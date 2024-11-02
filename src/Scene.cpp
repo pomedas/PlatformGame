@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
+#include "Enemy.h"
 
 Scene::Scene() : Module()
 {
@@ -38,6 +39,13 @@ bool Scene::Awake()
 		item->SetParameters(itemNode);
 	}
 
+	// Create a enemy using the entity manager 
+	for (pugi::xml_node enemyNode = configParameters.child("entities").child("enemies").child("enemy"); enemyNode; enemyNode = enemyNode.next_sibling("enemy"))
+	{
+		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
+		enemy->SetParameters(enemyNode);
+	}
+
 	return ret;
 }
 
@@ -48,12 +56,12 @@ bool Scene::Start()
 	Engine::GetInstance().map->Load(configParameters.child("map").attribute("path").as_string(), configParameters.child("map").attribute("name").as_string());
 
 	// Texture to highligh mouse position 
-	mouseTileTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/tileSelection.png");
+	mouseTileTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/MapMetadata.png");
 
-	// Initalize the camera position in the center of the map
+	// Initalize the camera position
 	int w, h;
 	Engine::GetInstance().window.get()->GetWindowSize(w, h);
-	Engine::GetInstance().render.get()->camera.x = w/ 2;
+	Engine::GetInstance().render.get()->camera.x = 0;
 	Engine::GetInstance().render.get()->camera.y = 0;
 
 	return true;
@@ -93,9 +101,11 @@ bool Scene::Update(float dt)
 
 	//Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
 	Vector2D highlightTile = Engine::GetInstance().map.get()->MapToWorld(mouseTile.getX(),mouseTile.getY());
+	SDL_Rect rect = { 0,0,32,32 };
 	Engine::GetInstance().render.get()->DrawTexture(mouseTileTex,
-													highlightTile.getX() - Engine::GetInstance().map.get()->GetTileWidth() / 2,
-													highlightTile.getY());
+													highlightTile.getX(),
+													highlightTile.getY(),
+													&rect);
 
 	//If mouse button is pressed modify player position
 	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
@@ -121,4 +131,10 @@ bool Scene::CleanUp()
 {
 	LOG("Freeing scene");
 	return true;
+}
+
+// Return the player position
+Vector2D Scene::GetPlayerPosition()
+{
+	return player->position;
 }

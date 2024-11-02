@@ -7,6 +7,7 @@ enum class EntityType
 {
 	PLAYER,
 	ITEM,
+	ENEMY,
 	UNKNOWN
 };
 
