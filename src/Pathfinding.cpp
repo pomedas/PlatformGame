@@ -4,13 +4,18 @@
 #include "Map.h"
 #include "Render.h"
 #include "Scene.h"
+#include "Log.h"
 
 Pathfinding::Pathfinding() {
     
      //Loads texture to draw the path
     pathTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/MapMetadata.png");
+    tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
     map = Engine::GetInstance().map.get();
     layerNav = map->GetNavigationLayer();
+
+    // Initialize the costSoFar with all elements set to 0
+    costSoFar = std::vector<std::vector<int>>(map->GetWidth(), std::vector<int>(map->GetHeight(), 0));
 }
 
 Pathfinding::~Pathfinding() {
@@ -20,15 +25,29 @@ Pathfinding::~Pathfinding() {
 // L11: BFS Pathfinding methods
 void Pathfinding::ResetPath(Vector2D pos) {
 
-    // Clear the queue
+    // Clear the frontier queue
     while (!frontier.empty()) {
         frontier.pop();
     }
-    //Clear the visited list
-    visited.clear();
 
+    // Clear the frontierDijkstra queue
+    while (!frontierDijkstra.empty()) {
+        frontierDijkstra.pop();
+    }
+
+    visited.clear(); //Clear the visited list
+    breadcrumbs.clear(); //Clear the breadcrumbs list
+    pathTiles.clear(); //Clear the pathTiles list
+
+    // Inserts the first position in the queue and visited list
     frontier.push(pos);
+    frontierDijkstra.push(std::make_pair(0, pos));
     visited.push_back(pos);
+    breadcrumbs.push_back(pos);
+
+    //reset the costSoFar matrix
+    costSoFar = std::vector<std::vector<int>>(map->GetWidth(), std::vector<int>(map->GetHeight(), 0));
+    
 }
 
 void Pathfinding::DrawPath() {
@@ -59,6 +78,32 @@ void Pathfinding::DrawPath() {
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
         //Remove the front element from the queue
         frontierCopy.pop();
+    }
+
+    // Draw frontierDijsktra
+    
+    // Create a copy of the queue to iterate over
+    std::priority_queue<std::pair<int, Vector2D>, std::vector<std::pair<int, Vector2D>>, std::greater<std::pair<int, Vector2D>> > frontierDijkstraCopy = frontierDijkstra;
+
+    // Iterate over the elements of the frontier copy
+    while (!frontierDijkstraCopy.empty()) {
+
+        //Get the first element of the queue
+        Vector2D frontierTile = frontierDijkstraCopy.top().second;
+        //Get the position of the frontier tile in the world
+        Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
+        //Draw the frontier tile
+        SDL_Rect rect = { 0,0,32,32 };
+        Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
+        //Remove the front element from the queue
+        frontierDijkstraCopy.pop();
+    }
+
+
+    // Draw path
+    for (const auto& pathTile : pathTiles) {
+        Vector2D pathTileWorld = map->MapToWorld(pathTile.getX(), pathTile.getY());
+        Engine::GetInstance().render.get()->DrawTexture(tileX, pathTileWorld.getX(), pathTileWorld.getY());
     }
 
 }
@@ -94,6 +139,8 @@ void Pathfinding::PropagateBFS() {
 
         if (frontierTile == playerPosTile) {
             foundDestination = true;
+
+            // L12: TODO 2: When the destination is reach, call the function ComputePath
         }
     }
 
@@ -124,8 +171,55 @@ void Pathfinding::PropagateBFS() {
 			if (std::find(visited.begin(), visited.end(), neighbor) == visited.end()) {
 				frontier.push(neighbor);
 				visited.push_back(neighbor);
+                //L12 TODO 1: store the position from where the neighbor was reached in the breadcrumbs list
 			}
 		}
 
     }
+}
+
+void Pathfinding::PropagateDijkstra() {
+
+    // L12: TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
+
+}
+
+int Pathfinding::MovementCost(int x, int y) 
+{
+    int ret = -1;
+
+    if ((x >= 0) && (x < map->GetWidth()) && (y >= 0) && (y < map->GetHeight()))
+    {
+        int gid = layerNav->Get(x, y);
+        if (gid == highCostGid) {
+            ret = 5;
+        }
+        else ret = 1;
+    }
+
+    return ret;
+}
+
+void Pathfinding::ComputePath(int x, int y)
+{
+    // L12: TODO 2: Follow the breadcrumps to goal back to the origin
+    // at each step, add the point into "pathTiles" (it will then draw automatically)
+
+}
+
+int Pathfinding::Find(std::vector<Vector2D> vector,Vector2D elem)
+{
+    int index = 0;
+    bool found = false;
+    for (const auto& e : vector) {
+        if (e == elem) {
+            found = true;
+            break;
+        }
+        index++;
+    }
+
+    if(found) return index;
+	else return -1;
+
 }
