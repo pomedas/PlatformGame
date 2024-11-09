@@ -107,6 +107,12 @@ bool Scene::Update(float dt)
 													highlightTile.getY(),
 													&rect);
 
+	// saves the tile pos for debugging purposes
+	if (mouseTile.getX() >= 0 && mouseTile.getY() >= 0 || once) {
+		tilePosDebug = "[" + std::to_string((int)mouseTile.getX()) + "," + std::to_string((int)mouseTile.getY()) + "] ";
+		once = true;
+	}
+
 	//If mouse button is pressed modify player position
 	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
 		player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
@@ -136,5 +142,5 @@ bool Scene::CleanUp()
 // Return the player position
 Vector2D Scene::GetPlayerPosition()
 {
-	return player->position;
+	return player->GetPosition();
 }
