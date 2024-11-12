@@ -30,6 +30,8 @@ public:
 
 	Vector2D GetPosition();
 
+	void ResetPath();
+
 public:
 
 private:

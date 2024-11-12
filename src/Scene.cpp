@@ -44,6 +44,7 @@ bool Scene::Awake()
 	{
 		Enemy* enemy = (Enemy*)Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY);
 		enemy->SetParameters(enemyNode);
+		enemyList.push_back(enemy);
 	}
 
 	return ret;
@@ -113,9 +114,10 @@ bool Scene::Update(float dt)
 		once = true;
 	}
 
-	//If mouse button is pressed modify player position
+	//If mouse button is pressed modify enemy position
 	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
-		player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
+		enemyList[0]->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
+		enemyList[0]->ResetPath();
 	}
 
 	return true;
