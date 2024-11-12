@@ -6,6 +6,12 @@
 #include "SDL2/SDL.h"
 #include "Map.h"
 
+enum ASTAR_HEURISTICS {
+    MANHATTAN = 0,
+    EUCLIDEAN,
+    SQUARED
+};
+
 class Pathfinding
 {
 
