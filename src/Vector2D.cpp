@@ -67,3 +67,17 @@ bool Vector2D::operator<(const Vector2D& other) const {
     }
     return y < other.y;
 }
+
+// L13 TODO 1: Implement Distance between two vectors (Manahttan, Euclidean, Squared)
+float Vector2D::distanceMahattan(const Vector2D& other) const {
+	return std::abs(x - other.x) + std::abs(y - other.y);
+}
+
+float Vector2D::distanceEuclidean(const Vector2D& other) const {
+	return std::sqrt(std::pow(x - other.x, 2) + std::pow(y - other.y, 2));
+}
+
+float Vector2D::distanceSquared(const Vector2D& other) const {
+	return std::pow(x - other.x, 2) + std::pow(y - other.y, 2);
+}
+
