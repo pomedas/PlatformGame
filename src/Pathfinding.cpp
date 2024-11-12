@@ -35,13 +35,19 @@ void Pathfinding::ResetPath(Vector2D pos) {
         frontierDijkstra.pop();
     }
 
+    // Clear the frontierAStar queue
+    while (!frontierAStar.empty()) {
+		frontierAStar.pop();
+	}
+
     visited.clear(); //Clear the visited list
     breadcrumbs.clear(); //Clear the breadcrumbs list
     pathTiles.clear(); //Clear the pathTiles list
 
     // Inserts the first position in the queue and visited list
-    frontier.push(pos);
-    frontierDijkstra.push(std::make_pair(0, pos));
+    frontier.push(pos); //BFS
+    frontierDijkstra.push(std::make_pair(0, pos)); //Dijkstra
+    frontierAStar.push(std::make_pair(0, pos)); //AStar
     visited.push_back(pos);
     breadcrumbs.push_back(pos);
 
@@ -61,7 +67,7 @@ void Pathfinding::DrawPath() {
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pathTileWorld.getX(), pathTileWorld.getY(),&rect);
     }
 
-    // Draw frontier
+    // ---------------- Draw frontier BFS
     
     // Create a copy of the queue to iterate over
     std::queue<Vector2D> frontierCopy = frontier;
@@ -80,7 +86,7 @@ void Pathfinding::DrawPath() {
         frontierCopy.pop();
     }
 
-    // Draw frontierDijsktra
+    // ---------------- Draw frontierDijsktra
     
     // Create a copy of the queue to iterate over
     std::priority_queue<std::pair<int, Vector2D>, std::vector<std::pair<int, Vector2D>>, std::greater<std::pair<int, Vector2D>> > frontierDijkstraCopy = frontierDijkstra;
@@ -97,6 +103,25 @@ void Pathfinding::DrawPath() {
         Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
         //Remove the front element from the queue
         frontierDijkstraCopy.pop();
+    }
+
+    // ---------------- Draw frontier AStar
+
+    // Create a copy of the queue to iterate over
+    std::priority_queue<std::pair<int, Vector2D>, std::vector<std::pair<int, Vector2D>>, std::greater<std::pair<int, Vector2D>> > frontierAStarCopy = frontierAStar;
+
+    // Iterate over the elements of the frontier copy
+    while (!frontierAStarCopy.empty()) {
+
+        //Get the first element of the queue
+        Vector2D frontierTile = frontierAStarCopy.top().second;
+        //Get the position of the frontier tile in the world
+        Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
+        //Draw the frontier tile
+        SDL_Rect rect = { 0,0,32,32 };
+        Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
+        //Remove the front element from the queue
+        frontierAStarCopy.pop();
     }
 
 
@@ -234,6 +259,9 @@ void Pathfinding::PropagateDijkstra() {
         }
 
     }
+}
+
+void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
 }
 
 int Pathfinding::MovementCost(int x, int y) 
