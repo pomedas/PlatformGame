@@ -146,3 +146,6 @@ Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
 }
+
+// L15 TODO 1: Implement the Load function
+// L15 TODO 2: Implement the Save function

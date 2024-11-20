@@ -37,6 +37,9 @@ public:
 	// Return the player position
 	Vector2D GetPlayerPosition();
 
+	//L15 TODO 1: Implement the Load function
+	//L15 TODO 2: Implement the Save function
+
 public:
 	// Get tilePosDebug value
 	std::string GetTilePosDebug() {
