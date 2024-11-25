@@ -94,10 +94,17 @@ bool Scene::Update(float dt)
 
 	// L10 TODO 6: Implement a method that repositions the player in the map with a mouse click
 	
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_C) == KEY_DOWN) {
+		if (test) Engine::GetInstance().render.get()->camera.x = 0;
+		else Engine::GetInstance().render.get()->camera.x = -32 * 2;
+		test = !test;
+	}
+
+
 	//Get mouse position and obtain the map coordinate
 	Vector2D mousePos = Engine::GetInstance().input.get()->GetMousePosition();
-	Vector2D mouseTile = Engine::GetInstance().map.get()->WorldToMap(mousePos.getX() - Engine::GetInstance().render.get()->camera.x,
-																     mousePos.getY() - Engine::GetInstance().render.get()->camera.y);
+	Vector2D mouseTile = Engine::GetInstance().map.get()->WorldToMap(mousePos.getX() - Engine::GetInstance().render.get()->camera.x * 2,
+																     mousePos.getY() - Engine::GetInstance().render.get()->camera.y * 2);
 
 
 	//Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
@@ -110,7 +117,9 @@ bool Scene::Update(float dt)
 
 	// saves the tile pos for debugging purposes
 	if (mouseTile.getX() >= 0 && mouseTile.getY() >= 0 || once) {
-		tilePosDebug = "[" + std::to_string((int)mouseTile.getX()) + "," + std::to_string((int)mouseTile.getY()) + "] ";
+		tilePosDebug = "[" + std::to_string((int)Engine::GetInstance().render.get()->camera.x) + "," + std::to_string((int)Engine::GetInstance().render.get()->camera.y) + "] " +
+					   "[" + std::to_string((int)mousePos.getX()) + "," + std::to_string((int)mousePos.getY()) + "] " + 
+					   "[" + std::to_string((int)mouseTile.getX()) + "," + std::to_string((int)mouseTile.getY()) + "] ";
 		once = true;
 	}
 
