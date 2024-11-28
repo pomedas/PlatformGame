@@ -93,12 +93,11 @@ bool Scene::Update(float dt)
 		Engine::GetInstance().render.get()->camera.x += ceil(camSpeed * dt);
 
 	// L10 TODO 6: Implement a method that repositions the player in the map with a mouse click
-	
+
 	//Get mouse position and obtain the map coordinate
 	Vector2D mousePos = Engine::GetInstance().input.get()->GetMousePosition();
-	Vector2D mouseTile = Engine::GetInstance().map.get()->WorldToMap(mousePos.getX() - Engine::GetInstance().render.get()->camera.x,
-																     mousePos.getY() - Engine::GetInstance().render.get()->camera.y);
-
+	Vector2D mouseTile = Engine::GetInstance().map.get()->WorldToMap(mousePos.getX() - Engine::GetInstance().render.get()->camera.x / 2,
+																     mousePos.getY() - Engine::GetInstance().render.get()->camera.y / 2);
 
 	//Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
 	Vector2D highlightTile = Engine::GetInstance().map.get()->MapToWorld(mouseTile.getX(),mouseTile.getY());
