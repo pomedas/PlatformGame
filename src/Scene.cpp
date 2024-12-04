@@ -12,6 +12,8 @@
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
+#include "GuiControl.h"
+#include "GuiManager.h"
 
 Scene::Scene() : Module()
 {
@@ -47,12 +49,17 @@ bool Scene::Awake()
 		enemyList.push_back(enemy);
 	}
 
+	// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+	SDL_Rect btPos = { 520, 350, 120,20 };
+	guiBt = (GuiControlButton*) Engine::GetInstance().guiManager->CreateGuiControl(GuiControlType::BUTTON, 1, "MyButton", btPos, this);
+
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
+
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load(configParameters.child("map").attribute("path").as_string(), configParameters.child("map").attribute("name").as_string());
 
@@ -77,6 +84,7 @@ bool Scene::PreUpdate()
 // Called each loop iteration
 bool Scene::Update(float dt)
 {
+
 	//L03 TODO 3: Make the camera movement independent of framerate
 	float camSpeed = 1;
 
@@ -203,4 +211,12 @@ void Scene::SaveState() {
 
 	//Saves the modifications to the XML 
 	loadFile.save_file("config.xml");
+}
+
+bool Scene::OnGuiMouseClickEvent(GuiControl* control)
+{
+	// L15: DONE 5: Implement the OnGuiMouseClickEvent method
+	LOG("Press Gui Control: %d", control->id);
+
+	return true;
 }
