@@ -14,7 +14,7 @@ Physics::Physics() : Module()
 {
 	// Initialise all the internal class variables, at least to NULL pointer
 	world = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -347,14 +347,14 @@ void Physics::BeginContact(b2Contact* contact)
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-	if (physA && physA->listener != NULL) {
+	if (physA && physA->listener != NULL && !IsPendingToDelete(physB)) {
 		if (physB) // Ensure physB is also valid
 		{
 			physA->listener->OnCollision(physA, physB);
 		}
 	}
 
-	if (physB && physB->listener != NULL) {
+	if (physB && physB->listener != NULL && !IsPendingToDelete(physB)) {
 		if(physA) // Ensure physA is also valid
 		{
 			physB->listener->OnCollision(physB, physA);
