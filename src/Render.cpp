@@ -2,6 +2,7 @@
 #include "Window.h"
 #include "Render.h"
 #include "Log.h"
+#include "tracy/Tracy.hpp"
 
 #define VSYNC true
 
@@ -70,6 +71,9 @@ bool Render::Start()
 // Called each loop iteration
 bool Render::PreUpdate()
 {
+	ZoneScoped;
+	// Code you want to profile
+
 	SDL_RenderClear(renderer);
 	return true;
 }
@@ -81,6 +85,9 @@ bool Render::Update(float dt)
 
 bool Render::PostUpdate()
 {
+	ZoneScoped;
+	// Code you want to profile
+
 	SDL_SetRenderDrawColor(renderer, background.r, background.g, background.g, background.a);
 	SDL_RenderPresent(renderer);
 	return true;

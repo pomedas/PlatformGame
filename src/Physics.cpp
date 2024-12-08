@@ -9,6 +9,7 @@
 #include "Player.h"
 #include "Window.h"
 #include "box2D/box2d.h"
+#include "tracy/Tracy.hpp"
 
 Physics::Physics() : Module()
 {
@@ -39,6 +40,9 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+	ZoneScoped;
+	// Code you want to profile
+
 	bool ret = true;
 
 	// Step (update) the World
@@ -214,6 +218,9 @@ PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType typ
 // 
 bool Physics::PostUpdate()
 {
+	ZoneScoped;
+	// Code you want to profile
+
 	bool ret = true;
 
 	// Activate or deactivate debug mode
