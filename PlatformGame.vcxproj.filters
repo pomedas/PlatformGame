@@ -93,6 +93,9 @@
     <ClCompile Include="src\GuiManager.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
+    <ClCompile Include="src\CutscenePlayer.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Audio.h">
@@ -165,6 +168,9 @@
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\GuiManager.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CutscenePlayer.h">
       <Filter>Source Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>

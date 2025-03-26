@@ -14,6 +14,7 @@
 #include "Enemy.h"
 #include "GuiControl.h"
 #include "GuiManager.h"
+#include "CutscenePlayer.h"
 
 Scene::Scene() : Module()
 {
@@ -143,6 +144,9 @@ bool Scene::PostUpdate()
 
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F5) == KEY_DOWN)
 		SaveState();
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_P) == KEY_DOWN)
+		Engine::GetInstance().cutScene->ConvertPixels(0, 1);
 
 	return ret;
 }

@@ -14,6 +14,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "GuiManager.h"
+#include "CutscenePlayer.h"
 
 #include "tracy/Tracy.hpp"
 
@@ -43,6 +44,7 @@ Engine::Engine() {
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
     guiManager = std::make_shared<GuiManager>();
+    cutScene = std::make_shared<CutscenePlayer>();
 
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
@@ -56,6 +58,7 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
 	AddModule(std::static_pointer_cast<Module>(guiManager));
+    AddModule(std::static_pointer_cast<Module>(cutScene));
 
     // Render last 
     AddModule(std::static_pointer_cast<Module>(render));
