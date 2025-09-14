@@ -19,7 +19,7 @@ bool Window::Awake()
 	LOG("Init SDL window & surface");
 	bool ret = true;
 
-	if(SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_VIDEO) != true)
 	{
 		LOG("SDL_VIDEO could not initialize! SDL_Error: %s\n", SDL_GetError());
 		ret = false;
@@ -27,28 +27,38 @@ bool Window::Awake()
 	else
 	{
 		// Create window
-		Uint32 flags = SDL_WINDOW_SHOWN;
+		Uint32 flags = 0;
 		bool fullscreen = false;
 		bool borderless = false;
 		bool resizable = false;
 		bool fullscreen_window = false;
 
-		//TODO Get the values from the config file
+		// TODO Get the values from the config file
 		width = 1280;
 		height = 720;
 		scale = 1;
 
-		if(fullscreen == true) flags |= SDL_WINDOW_FULLSCREEN;
-		if(borderless == true) flags |= SDL_WINDOW_BORDERLESS;
-		if(resizable == true) flags |= SDL_WINDOW_RESIZABLE;
-		if(fullscreen_window == true) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+		if (fullscreen == true)        flags |= SDL_WINDOW_FULLSCREEN;
+		if (borderless == true)        flags |= SDL_WINDOW_BORDERLESS;
+		if (resizable == true)         flags |= SDL_WINDOW_RESIZABLE;
 
-		window = SDL_CreateWindow("Platform Game", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, flags);
+		// SDL3: SDL_CreateWindow(title, w, h, flags). Set position separately.
+		window = SDL_CreateWindow("Platform Game", width, height, flags);
 
-		if(window == NULL)
+		if (window == NULL)
 		{
 			LOG("Window could not be created! SDL_Error: %s\n", SDL_GetError());
 			ret = false;
+		}
+		else
+		{
+			if (fullscreen_window == true)
+			{
+				SDL_SetWindowFullscreenMode(window, nullptr); // use desktop resolution
+				SDL_SetWindowFullscreen(window, true);
+			}
+			SDL_SetWindowPosition(window, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED);
+			SDL_ShowWindow(window);
 		}
 	}
 
@@ -61,7 +71,7 @@ bool Window::CleanUp()
 	LOG("Destroying SDL window and quitting all SDL systems");
 
 	// Destroy window
-	if(window != NULL)
+	if (window != NULL)
 	{
 		SDL_DestroyWindow(window);
 	}
