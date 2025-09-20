@@ -66,7 +66,7 @@ bool Engine::Awake() {
     //Iterates the module list and calls Awake on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result =  module.get()->Awake();
+        result =  module->Awake();
         if (!result) {
 			break;
 		}
@@ -88,7 +88,7 @@ bool Engine::Start() {
     //Iterates the module list and calls Start on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->Start();
+        result = module->Start();
         if (!result) {
             break;
         }
@@ -132,7 +132,7 @@ bool Engine::CleanUp() {
     //Iterates the module list and calls CleanUp on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->CleanUp();
+        result = module->CleanUp();
         if (!result) {
             break;
         }
@@ -179,7 +179,7 @@ bool Engine::PreUpdate()
     //Iterates the module list and calls PreUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->PreUpdate();
+        result = module->PreUpdate();
         if (!result) {
             break;
         }
@@ -194,7 +194,7 @@ bool Engine::DoUpdate()
     //Iterates the module list and calls Update on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->Update(dt);
+        result = module->Update(dt);
         if (!result) {
             break;
         }
@@ -209,7 +209,7 @@ bool Engine::PostUpdate()
     //Iterates the module list and calls PostUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->PostUpdate();
+        result = module->PostUpdate();
         if (!result) {
             break;
         }
