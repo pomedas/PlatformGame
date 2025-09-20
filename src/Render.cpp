@@ -7,8 +7,6 @@
 #define M_PI 3.14159265358979323846
 #endif
 
-#define VSYNC true
-
 Render::Render() : Module()
 {
 	name = "render";
@@ -42,7 +40,7 @@ bool Render::Awake()
 	}
 	else
 	{
-		if (VSYNC)
+		if (vsync)
 		{
 			if (!SDL_SetRenderVSync(renderer, 1))
 			{
