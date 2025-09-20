@@ -3,7 +3,7 @@
 // ----------------------------------------------------
 
 #include "Timer.h"
-#include "SDL2\SDL_timer.h"
+#include <SDL3\SDL_timer.h>
 
 // L2: TODO 1: Fill Start(), Read(), ReadSec() methods
 // they are simple, one line each!
