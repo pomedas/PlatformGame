@@ -1,9 +1,8 @@
 #pragma once
 
 #include "Module.h"
-#include "SDL2/SDL_image.h"
-#include "SDL2/SDL_render.h"
-#include "SDL2/SDL_surface.h"
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
 
 class Textures : public Module
 {
