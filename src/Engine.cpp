@@ -1,9 +1,8 @@
-#include "Engine.h"
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-#include "Log.h"
 
+#include "Engine.h"
 #include "Window.h"
 #include "Input.h"
 #include "Render.h"
@@ -11,6 +10,7 @@
 #include "Audio.h"
 #include "Scene.h"
 #include "EntityManager.h"
+#include "Log.h"
 
 
 // Constructor
@@ -18,8 +18,8 @@ Engine::Engine() {
 
 	LOG("Constructor Engine::Engine");
 
-    //Measure the amount of ms that takes to execute the App constructor and LOG the result
-    Timer timer = Timer();
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Engine constructor and LOG the result
+	Timer timer = Timer();
     startupTime = Timer();
     frameTime = PerfTimer();
     lastSecFrameTime = PerfTimer();
@@ -48,10 +48,11 @@ Engine::Engine() {
     // Render last 
     AddModule(std::static_pointer_cast<Module>(render));
 
-    LOG("Timer App Constructor: %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
+	LOG("Timer App Constructor: %f", timer.ReadMSec());
 }
 
-// Static method to get the instance of the Engine class, following the singletn pattern
+// Static method to get the instance of the Engine class, following the singleton pattern
 Engine& Engine::GetInstance() {
     static Engine instance; // Guaranteed to be destroyed and instantiated on first use
     return instance;
@@ -65,7 +66,7 @@ void Engine::AddModule(std::shared_ptr<Module> module){
 // Called before render is available
 bool Engine::Awake() {
 
-    //Measure the amount of ms that takes to execute the Awake and LOG the result
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Awake and LOG the result
     Timer timer = Timer();
 
     LOG("Engine::Awake");
@@ -79,13 +80,14 @@ bool Engine::Awake() {
     bool result = true;
     for (const auto& module : moduleList) {
         // L05: TODO 4: Call the LoadParameters function for each module
-        result =  module.get()->Awake();
+        result =  module->Awake();
         if (!result) {
 			break;
 		}
     }
 
-    LOG("Timer App Awake(): %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
+	LOG("Timer App Awake(): %f", timer.ReadMSec());
 
     return result;
 }
@@ -93,7 +95,7 @@ bool Engine::Awake() {
 // Called before the first frame
 bool Engine::Start() {
 
-    //Measure the amount of ms that takes to execute the App Start() and LOG the result
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Start() and LOG the result
     Timer timer = Timer();
 
     LOG("Engine::Start");
@@ -101,14 +103,15 @@ bool Engine::Start() {
     //Iterates the module list and calls Start on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->Start();
+        result = module->Start();
         if (!result) {
             break;
         }
     }
 
-    LOG("Timer App Start(): %f", timer.ReadMSec());
-
+    // L2: TODO 3: Log the result of the timer
+	LOG("Timer App CleanUp(): %f", timer.ReadMSec());
+	
     return result;
 }
 
@@ -137,7 +140,7 @@ bool Engine::Update() {
 // Called before quitting
 bool Engine::CleanUp() {
 
-    //Measure the amount of ms that takes to execute the App CleanUp() and LOG the result
+    // L2: TODO 3: Measure the amount of ms that takes to execute the Start() and LOG the result
     Timer timer = Timer();
 
     LOG("Engine::CleanUp");
@@ -145,13 +148,14 @@ bool Engine::CleanUp() {
     //Iterates the module list and calls CleanUp on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->CleanUp();
+        result = module->CleanUp();
         if (!result) {
             break;
         }
     }
 
-    LOG("Timer App CleanUp(): %f", timer.ReadMSec());
+    // L2: TODO 3: Log the result of the timer
+	LOG("Timer App CleanUp(): %f", timer.ReadMSec());
 
     return result;
 }
@@ -167,8 +171,9 @@ void Engine::FinishUpdate()
 {
     // L03: TODO 1: Cap the framerate of the gameloop
     double currentDt = frameTime.ReadMs();
-    if (maxFrameDuration > 0 && currentDt < maxFrameDuration) {
-        int delay = (int)(maxFrameDuration - currentDt);
+	float maxFrameDuration = 1000.0f / targetFrameRate;
+    if (targetFrameRate > 0 && currentDt < maxFrameDuration) {
+        Uint32 delay = (Uint32)(maxFrameDuration - currentDt);
 
         // L03: TODO 2: Measure accurately the amount of time SDL_Delay() actually waits compared to what was expected
         PerfTimer delayTimer = PerfTimer();
@@ -177,6 +182,8 @@ void Engine::FinishUpdate()
         //LOG("We waited for %I32u ms and got back in %f ms",delay,delayTimer.ReadMs()); // Uncomment this line to see the results
     }
 
+	// L2: TODO 4: Calculate:
+	
     // Amount of frames since startup
     frameCount++;
 
@@ -211,13 +218,14 @@ void Engine::FinishUpdate()
     window.get()->SetTitle(titleStr.c_str());
 }
 
+
 // Call modules before each loop iteration
 bool Engine::PreUpdate()
 {
     //Iterates the module list and calls PreUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->PreUpdate();
+        result = module->PreUpdate();
         if (!result) {
             break;
         }
@@ -232,7 +240,7 @@ bool Engine::DoUpdate()
     //Iterates the module list and calls Update on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->Update(dt);
+        result = module->Update(dt);
         if (!result) {
             break;
         }
@@ -247,7 +255,7 @@ bool Engine::PostUpdate()
     //Iterates the module list and calls PostUpdate on each module
     bool result = true;
     for (const auto& module : moduleList) {
-        result = module.get()->PostUpdate();
+        result = module->PostUpdate();
         if (!result) {
             break;
         }
