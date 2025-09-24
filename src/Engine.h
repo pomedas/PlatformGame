@@ -105,8 +105,8 @@ private:
 	float averageFps = 0.0f;
 	int secondsSinceStartup = 0;
 
-	//Maximun frame duration in miliseconds.
-	int maxFrameDuration = 16;
+	// The target framerate of the game
+	int targetFrameRate = 60;
 
 	std::string gameTitle = "Platformer Game";
 };
