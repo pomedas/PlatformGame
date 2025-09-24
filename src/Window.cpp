@@ -28,6 +28,7 @@ bool Window::Awake()
 	{
 		// Create window
 		//L05 TODO 6: Get the values from the config file
+		Uint32 flags = 0;
 		bool fullscreen = false;
 		bool borderless = false;
 		bool resizable = false;
