@@ -20,6 +20,8 @@ public:
 
 	bool CleanUp();
 
+	bool Destroy();
+
 public:
 
 	bool isPicked = false;
