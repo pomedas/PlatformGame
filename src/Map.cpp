@@ -151,8 +151,7 @@ bool Map::Load(std::string path, std::string fileName)
 
             //add the layer to the map
             mapData.layers.push_back(mapLayer);
-        }
-        
+        } 
         ret = true;
 
         // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
@@ -161,7 +160,6 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Successfully parsed map XML file :%s", fileName.c_str());
             LOG("width : %d height : %d", mapData.width, mapData.height);
             LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-
             LOG("Tilesets----");
 
             //iterate the tilesets

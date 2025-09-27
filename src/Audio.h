@@ -1,8 +1,9 @@
 #pragma once
 
 #include "Module.h"
-#include "SDL2/SDL_mixer.h"
-#include <list>
+#include <SDL3/SDL.h>
+#include <vector>
+#include <string>
 
 #define DEFAULT_MUSIC_FADE_TIME 2.0f
 
@@ -34,6 +35,27 @@ public:
 
 private:
 
-	_Mix_Music* music;
-	std::list<Mix_Chunk*> fx;
+    struct SoundData {
+        SDL_AudioSpec spec{};  // source format
+        Uint8* buf{ nullptr };
+        Uint32 len{ 0 };  // bytes
+    };
+
+    // Device and default output format
+    SDL_AudioDeviceID device_{ 0 };
+    SDL_AudioSpec     device_spec_{};
+
+    // Streams
+    SDL_AudioStream* music_stream_{ nullptr }; // for background music (single)
+    SDL_AudioStream* sfx_stream_{ nullptr };   // simple shared SFX stream
+
+    // Loaded sounds
+    SoundData music_data_{};
+    std::vector<SoundData> sfx_; // 1-based indexing outwardly
+
+    // helpers
+    bool LoadWavFile(const char* path, SoundData& out);
+    void FreeSound(SoundData& s);
+    bool EnsureDeviceOpen();
+    bool EnsureStreams();
 };
