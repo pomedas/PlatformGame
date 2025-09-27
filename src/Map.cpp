@@ -48,7 +48,7 @@ bool Map::CleanUp()
 {
     LOG("Unloading map");
 
-    // L05: TODO 2: Make sure you clean up any memory allocated from tilesets/map
+    // L06: TODO 2: Make sure you clean up any memory allocated from tilesets/map
 
     return true;
 }
