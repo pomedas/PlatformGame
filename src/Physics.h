@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Entity.h"
-#include "box2d/box2d.h"
+#include <box2d/box2d.h>
 #include <list>
 
 #define GRAVITY_X 0.0f
@@ -27,6 +27,7 @@ enum class ColliderType {
 	PLAYER, 
 	ITEM,
 	PLATFORM, 
+	ENEMY,
 	UNKNOWN
 	// ..
 };
@@ -79,6 +80,7 @@ public:
 	void EndContact(b2Contact* contact);
 
 	void DeletePhysBody(PhysBody* physBody);
+	bool IsPendingToDelete(PhysBody* physBody);
 
 private:
 

@@ -53,7 +53,7 @@ bool Map::Update(float dt)
                     //Get the screen coordinates from the tile coordinates
                     Vector2D mapCoord = MapToWorld(i, j);
                     //Draw the texture
-                    Engine::GetInstance().render->DrawTexture(mapData.tilesets.front()->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
+                    Engine::GetInstance().render->DrawTexture(mapData.tilesets.front()->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
 
                 }
             }
@@ -164,8 +164,7 @@ bool Map::Load(std::string path, std::string fileName)
         c2->ctype = ColliderType::PLATFORM;
 
         PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
-        c3->ctype = ColliderType::PLATFORM;
-
+        c3->ctype = ColliderType::PLATFORM; 
         ret = true;
 
         // L06: TODO 5: LOG all the data loaded iterate all tilesetsand LOG everything
@@ -174,7 +173,6 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Successfully parsed map XML file :%s", fileName.c_str());
             LOG("width : %d height : %d", mapData.width, mapData.height);
             LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-
             LOG("Tilesets----");
 
             //iterate the tilesets
@@ -208,8 +206,8 @@ Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
 
-    ret.setX(x * mapData.tileWidth);
-    ret.setY(y * mapData.tileHeight);
+    ret.setX((float)(x * mapData.tileWidth));
+    ret.setY((float)(y * mapData.tileHeight));
 
     return ret;
 }

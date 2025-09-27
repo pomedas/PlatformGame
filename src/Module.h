@@ -58,6 +58,8 @@ public:
 		return true;
 	}
 
+	//L05 TODO 4a: Declare a function to read the XML parameters
+
 public:
 
 	std::string name;

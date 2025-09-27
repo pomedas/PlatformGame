@@ -2,7 +2,7 @@
 <config>
   <engine>
     <title>My platformer game</title>
-    <maxFrameDuration value="16"/>
+    <targetFrameRate value="60"/>
   </engine>
 
   <render>

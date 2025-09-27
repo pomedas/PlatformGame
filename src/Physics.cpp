@@ -3,18 +3,18 @@
 #include "Engine.h"
 #include "Log.h"
 #include "math.h"
-#include "SDL2/SDL_keycode.h"
+#include <SDL3/SDL_keycode.h>
 #include "Log.h"
 #include "Render.h"
 #include "Player.h"
 #include "Window.h"
-#include "box2D/box2d.h"
+#include <box2D/box2d.h>
 
 Physics::Physics() : Module()
 {
 	// Initialise all the internal class variables, at least to NULL pointer
 	world = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -39,6 +39,7 @@ bool Physics::Start()
 // 
 bool Physics::PreUpdate()
 {
+
 	bool ret = true;
 
 	// Step (update) the World
@@ -347,14 +348,14 @@ void Physics::BeginContact(b2Contact* contact)
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-	if (physA && physA->listener != NULL) {
+	if (physA && physA->listener != NULL && !IsPendingToDelete(physB)) {
 		if (physB) // Ensure physB is also valid
 		{
 			physA->listener->OnCollision(physA, physB);
 		}
 	}
 
-	if (physB && physB->listener != NULL) {
+	if (physB && physB->listener != NULL && !IsPendingToDelete(physB)) {
 		if(physA) // Ensure physA is also valid
 		{
 			physB->listener->OnCollision(physB, physA);
@@ -369,23 +370,35 @@ void Physics::EndContact(b2Contact* contact)
 	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
 	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
 
-	if (physA && physA->listener != NULL) {
+	if (physA && physA->listener != NULL && !IsPendingToDelete(physA)) {
 		if (physB) // Ensure physB is also valid
 		{
 			physA->listener->OnCollisionEnd(physA, physB);
 		}
 	}
 
-	if (physB && physB->listener != NULL) {
+	if (physB && physB->listener != NULL && !IsPendingToDelete(physB)) {
 		if (physA) // Ensure physA is also valid
 		{
-			physB->listener->OnCollisionEnd(physB, physA);
+ 			physB->listener->OnCollisionEnd(physB, physA);
 		}
 	}
 }
 
 void Physics::DeletePhysBody(PhysBody* physBody) {
 	bodiesToDelete.push_back(physBody);
+}
+
+bool Physics::IsPendingToDelete(PhysBody* physBody) {
+	bool pendingToDelete = false;
+	for (PhysBody* _physBody : bodiesToDelete) {
+		if (_physBody == physBody) {
+			pendingToDelete = true;
+			break;
+		}
+	}
+
+	return pendingToDelete;
 }
 
 //--------------- PhysBody
