@@ -71,9 +71,6 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		case EntityType::PLAYER:
 			entity = std::make_shared<Player>();
 			break;
-		case EntityType::ITEM:
-			entity = std::make_shared<Item>();
-			break;
 		default:
 			break;
 	}
