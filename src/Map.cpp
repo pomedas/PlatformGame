@@ -52,7 +52,7 @@ bool Map::Update(float dt)
                     //Get the screen coordinates from the tile coordinates
                     Vector2D mapCoord = MapToWorld(i, j);
                     //Draw the texture
-                    Engine::GetInstance().render->DrawTexture(mapData.tilesets.front()->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
+                    Engine::GetInstance().render->DrawTexture(mapData.tilesets.front()->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
 
                 }
             }
@@ -193,8 +193,8 @@ Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
 
-    ret.setX(x * mapData.tileWidth);
-    ret.setY(y * mapData.tileHeight);
+    ret.setX((float)(x * mapData.tileWidth));
+    ret.setY((float)(y * mapData.tileHeight));
 
     return ret;
 }
