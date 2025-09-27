@@ -1,8 +1,8 @@
 #pragma once
 
 #include "Module.h"
-#include "SDL2/SDL.h"
-#include "SDL2/SDL_rect.h"
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_rect.h>
 
 #define NUM_MOUSE_BUTTONS 5
 
@@ -59,12 +59,12 @@ public:
 	bool GetWindowEvent(EventWindow ev);
 
 	// Get mouse / axis position
-	void GetMousePosition(int &x, int &y);
+	void GetMousePosition(int& x, int& y);
 	void GetMouseMotion(int& x, int& y);
 
 private:
 	bool windowEvents[WE_COUNT];
-	KeyState*	keyboard;
+	KeyState* keyboard;
 	KeyState mouseButtons[NUM_MOUSE_BUTTONS];
 	int	mouseMotionX;
 	int mouseMotionY;

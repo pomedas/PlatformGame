@@ -1,8 +1,7 @@
 #pragma once
 
 #include "Module.h"
-#include "SDL2/SDL_Video.h"
-#include "SDL2/SDL.h"
+#include <SDL3/SDL.h>
 
 class Window : public Module
 {
