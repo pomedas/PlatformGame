@@ -28,10 +28,10 @@ bool Scene::Awake()
 	bool ret = true;
 
 	//L04: TODO 3b: Instantiate the player using the entity manager
-	player = (Player*)Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER);
+	player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
 	
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
-	Item* item = (Item*) Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM);
+	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->position = Vector2D(200, 672);
 
 	return ret;
@@ -71,7 +71,7 @@ bool Scene::Update(float dt)
 		Engine::GetInstance().render->camera.x -= (int)ceil(camSpeed * dt);
 	
 	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
-		Engine::GetInstance().render.get()->camera.x += ceil(camSpeed * dt);
+		Engine::GetInstance().render.get()->camera.x += (int)ceil(camSpeed * dt);
 
 	return true;
 }
