@@ -40,27 +40,26 @@ bool Map::Update(float dt)
         // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture()
         // iterate all tiles in a layer
         for (const auto& mapLayer : mapData.layers) {
-            //Check if the property Draw exist get the value, if it's true draw the lawyer
-            if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) {
-                for (int i = 0; i < mapData.width; i++) {
-                    for (int j = 0; j < mapData.height; j++) {
+            //L09 TODO 7: Check if the property Draw exist get the value, if it's true draw the lawyer
+            for (int i = 0; i < mapData.width; i++) {
+                for (int j = 0; j < mapData.height; j++) {
 
-                        // L07 TODO 9: Complete the draw function
+                    // L07 TODO 9: Complete the draw function
 
-                        //Get the gid from tile
-                        int gid = mapLayer->Get(i, j);
-                        //Check if the gid is different from 0 - some tiles are empty
-                        if (gid != 0) {
-                            //L09: TODO 3: Obtain the tile set using GetTilesetFromTileId
-                            TileSet* tileSet = GetTilesetFromTileId(gid);
-                            if (tileSet != nullptr) {
-                                //Get the Rect from the tileSetTexture;
-                                SDL_Rect tileRect = tileSet->GetRect(gid);
-                                //Get the screen coordinates from the tile coordinates
-                                Vector2D mapCoord = MapToWorld(i, j);
-                                //Draw the texture
-                                Engine::GetInstance().render->DrawTexture(tileSet->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
-                            }
+                    //Get the gid from tile
+                    int gid = mapLayer->Get(i, j);
+
+                    //Check if the gid is different from 0 - some tiles are empty
+                    if (gid != 0) {
+                        //L09: TODO 3: Obtain the tile set using GetTilesetFromTileId
+                        TileSet* tileSet = mapData.tilesets.front();
+                        if (tileSet != nullptr) {
+                            //Get the Rect from the tileSetTexture;
+                            SDL_Rect tileRect = tileSet->GetRect(gid);
+                            //Get the screen coordinates from the tile coordinates
+                            Vector2D mapCoord = MapToWorld(i, j);
+                            //Draw the texture
+                            Engine::GetInstance().render->DrawTexture(tileSet->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
                         }
                     }
                 }
@@ -75,13 +74,6 @@ bool Map::Update(float dt)
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
 	TileSet* set = nullptr;
-
-    for (const auto& tileset : mapData.tilesets) {
-    	if (gid >= tileset->firstGid && gid < (tileset->firstGid + tileset->tileCount)) {
-			set = tileset;
-			break;
-		}
-    }
 
     return set;
 }
@@ -169,7 +161,6 @@ bool Map::Load(std::string path, std::string fileName)
             mapLayer->height = layerNode.attribute("height").as_int();
 
             //L09: TODO 6 Call Load Layer Properties
-            LoadProperties(layerNode, mapLayer->properties);
 
             //Iterate over all the tiles and assign the values in the data array
             for (pugi::xml_node tileNode = layerNode.child("data").child("tile"); tileNode != NULL; tileNode = tileNode.next_sibling("tile")) {
@@ -208,7 +199,6 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Successfully parsed map XML file :%s", fileName.c_str());
             LOG("width : %d height : %d", mapData.width, mapData.height);
             LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-
             LOG("Tilesets----");
 
             //iterate the tilesets
@@ -242,8 +232,8 @@ Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
 
-    ret.setX(x * mapData.tileWidth);
-    ret.setY(y * mapData.tileHeight);
+    ret.setX((float)(x * mapData.tileWidth));
+    ret.setY((float)(y * mapData.tileHeight));
 
     return ret;
 }
@@ -251,16 +241,7 @@ Vector2D Map::MapToWorld(int x, int y) const
 // L09: TODO 6: Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
-    bool ret = false;
-
-    for (pugi::xml_node propertieNode = node.child("properties").child("property"); propertieNode; propertieNode = propertieNode.next_sibling("property"))
-    {
-        Properties::Property* p = new Properties::Property();
-        p->name = propertieNode.attribute("name").as_string();
-        p->value = propertieNode.attribute("value").as_bool(); // (!!) I'm assuming that all values are bool !!
-
-        properties.propertyList.push_back(p);
-    }
+    bool ret = true;
 
     return ret;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Entity.h"
-#include "SDL2/SDL.h"
+#include <SDL3/SDL.h>
 
 struct SDL_Texture;
 
@@ -19,6 +19,8 @@ public:
 	bool Update(float dt);
 
 	bool CleanUp();
+
+	bool Destroy();
 
 public:
 

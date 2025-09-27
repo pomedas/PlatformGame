@@ -28,11 +28,11 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures.get()->Load("Assets/Textures/player1.png");
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	Engine::GetInstance().textures.get()->GetSize(texture, texW, texH);
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -41,54 +41,55 @@ bool Player::Start() {
 	pbody->ctype = ColliderType::PLAYER;
 
 	//initialize audio effect
-	pickCoinFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/retro-video-game-coin-pickup-38299.ogg");
+	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 	return true;
 }
 
 bool Player::Update(float dt)
 {
-	// L08 TODO 5: Add physics to the player - updated player position using physics
-	b2Vec2 velocity = b2Vec2(0, pbody->body->GetLinearVelocity().y);
+	Physics* physics = Engine::GetInstance().physics.get();
 
-	// Move left
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * 16;
+	// Read current velocity
+	b2Vec2 velocity = physics->GetLinearVelocity(pbody);
+	velocity = { 0, velocity.y }; // Reset horizontal velocity
+
+	// Move left/right
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		velocity.x = -0.2f * 16.0f;
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		velocity.x = 0.2f * 16.0f;
 	}
 
-	// Move right
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * 16;
-	}
-	
-	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		// Apply an initial upward force
-		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+	// Jump (impulse once)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+		physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
 		isJumping = true;
 	}
 
-	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
-	if(isJumping == true)
-	{
-		velocity.y = pbody->body->GetLinearVelocity().y;
+	// Preserve vertical speed while jumping
+	if (isJumping == true) {
+		velocity.y = physics->GetYVelocity(pbody);
 	}
 
-	// Apply the velocity to the player
-	pbody->body->SetLinearVelocity(velocity);
+	// Apply velocity via helper
+	physics->SetLinearVelocity(pbody, velocity);
 
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+	// Update render position using your PhysBody helper
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY());
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
 	return true;
 }
 
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
-	Engine::GetInstance().textures.get()->UnLoad(texture);
+	Engine::GetInstance().textures->UnLoad(texture);
 	return true;
 }
 
@@ -103,8 +104,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
-		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
+		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+		physB->listener->Destroy();
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
@@ -131,3 +132,4 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	}
 }
+
