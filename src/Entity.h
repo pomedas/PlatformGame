@@ -9,10 +9,11 @@ enum class EntityType
 	UNKNOWN
 };
 
-class Entity
+class Entity : public std::enable_shared_from_this<Entity>
 {
 public:
 
+	Entity() {}
 	Entity(EntityType type) : type(type), active(true) {}
 
 	virtual bool Awake()
@@ -31,6 +32,11 @@ public:
 	}
 
 	virtual bool CleanUp()
+	{
+		return true;
+	}
+
+	virtual bool Destroy()
 	{
 		return true;
 	}
