@@ -157,13 +157,22 @@ bool Map::Load(std::string path, std::string fileName)
         // L08 TODO 3: Create colliders
         // L08 TODO 7: Assign collider type
         // Later you can create a function here to load and create the colliders from the map
-        PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(224 + 128, 544 + 32, 256, 64, STATIC);
+		Vector2D posC1 = Vector2D(224, 544);
+		int widthC1 = 256;
+		int heightC1 = 64;
+        PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC1.getX() + widthC1 / 2, (int)posC1.getY() + heightC1 / 2, widthC1, heightC1, STATIC);
         c1->ctype = ColliderType::PLATFORM;
 
-        PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle(352 + 64, 384 + 32, 128, 64, STATIC);
+        Vector2D posC2 = Vector2D(352, 384);
+        int widthC2 = 128;
+        int heightC2 = 64;
+        PhysBody* c2 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC2.getX() + widthC2 / 2, (int)posC2.getY() + heightC2 / 2, widthC2, heightC1, STATIC);
         c2->ctype = ColliderType::PLATFORM;
 
-        PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle(256, 704 + 32, 576, 64, STATIC);
+        Vector2D posC3 = Vector2D(0, 704);
+        int widthC3 = 544;
+        int heightC3 = 64;
+        PhysBody* c3 = Engine::GetInstance().physics.get()->CreateRectangle((int)posC3.getX() + widthC3 / 2, (int)posC3.getY() + heightC3 / 2, widthC3, heightC3, STATIC);
         c3->ctype = ColliderType::PLATFORM; 
         ret = true;
 
