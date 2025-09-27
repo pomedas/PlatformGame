@@ -1,7 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Entity.h"
-#include "box2d/box2d.h"
+#include <box2d/box2d.h>
 
 #define GRAVITY_X 0.0f
 #define GRAVITY_Y -10.0f
