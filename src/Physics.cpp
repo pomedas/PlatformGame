@@ -4,463 +4,471 @@
 #include "Log.h"
 #include "math.h"
 #include <SDL3/SDL_keycode.h>
-#include "Log.h"
 #include "Render.h"
 #include "Player.h"
 #include "Window.h"
-#include <box2D/box2d.h>
+#include <vector>
+#include <box2d/box2d.h>
 
 Physics::Physics() : Module()
 {
-	// Initialise all the internal class variables, at least to NULL pointer
-	world = NULL;
-	debug = false;
+    world = b2_nullWorldId;
+    debug = true; // toggle with F1
 }
 
 // Destructor
 Physics::~Physics()
 {
-	// You should do some memory cleaning here, if required
+    // You should do some memory cleaning here, if required
 }
 
 bool Physics::Start()
 {
-	LOG("Creating Physics 2D environment");
+    LOG("Creating Physics 2D environment");
 
-	// Create a new World
-	world = new b2World(b2Vec2(GRAVITY_X, -GRAVITY_Y));
+    // Create a new World (3.x uses world defs)
+    b2WorldDef wdef = b2DefaultWorldDef();
+    wdef.gravity.x = GRAVITY_X;
+    wdef.gravity.y = -GRAVITY_Y;
+    world = b2CreateWorld(&wdef);
 
-	// Set this module as a listener for contacts
-	world->SetContactListener(this);
-
-	return true;
+    return true;
 }
 
 // 
 bool Physics::PreUpdate()
 {
+    bool ret = true;
 
-	bool ret = true;
+    // Step (update) the World
+    // Get the dt from the engine. Note that dt is in milliseconds and Box2D steps in seconds
+    float dt = Engine::GetInstance().GetDt() / 1000.0f;
+    b2World_Step(world, dt, 4);
 
-	// Step (update) the World
-	//Get the dt form the engine. Note that dt is in miliseconds and steps in Box2D are in seconds
-	float dt = Engine::GetInstance().GetDt() / 1000; 
-	world->Step(dt, 6, 2);
+    // --- Sensor overlaps 
+    const b2SensorEvents sensorEvents = b2World_GetSensorEvents(world);
+    for (int i = 0; i < sensorEvents.beginCount; ++i)
+    {
+        const b2SensorBeginTouchEvent& e = sensorEvents.beginEvents[i];
+        if (!b2Shape_IsValid(e.sensorShapeId) || !b2Shape_IsValid(e.visitorShapeId)) continue;
+        BeginContact(e.sensorShapeId, e.visitorShapeId);
+    }
+    for (int i = 0; i < sensorEvents.endCount; ++i)
+    {
+        const b2SensorEndTouchEvent& e = sensorEvents.endEvents[i];
+        if (!b2Shape_IsValid(e.sensorShapeId) || !b2Shape_IsValid(e.visitorShapeId)) continue;
+        EndContact(e.sensorShapeId, e.visitorShapeId);
+    }
 
-	// Because Box2D does not automatically broadcast collisions/contacts with sensors, 
-	// we have to manually search for collisions and "call" the equivalent to the ModulePhysics::BeginContact() ourselves...
-	for (b2Contact* c = world->GetContactList(); c; c = c->GetNext())
-	{
-		// For each contact detected by Box2D, see if the first one colliding is a sensor
-		if (c->IsTouching() && c->GetFixtureA()->IsSensor())
-		{
-			// If so, we call the OnCollision listener function (only of the sensor), passing as inputs our custom PhysBody classes
-			PhysBody* pb1 = (PhysBody*)c->GetFixtureA()->GetBody()->GetUserData().pointer;
-			PhysBody* pb2 = (PhysBody*)c->GetFixtureB()->GetBody()->GetUserData().pointer;
-			
-			if (pb1 && pb2 && pb1->listener)
-				pb1->listener->OnCollision(pb1, pb2);
-		}
-	}
+    // --- Contacts (non-sensor) ---
+    const b2ContactEvents contactEvents = b2World_GetContactEvents(world);
+    for (int i = 0; i < contactEvents.beginCount; ++i)
+    {
+        const b2ContactBeginTouchEvent& e = contactEvents.beginEvents[i];
+        if (!b2Shape_IsValid(e.shapeIdA) || !b2Shape_IsValid(e.shapeIdB)) continue;
+        BeginContact(e.shapeIdA, e.shapeIdB);
+    }
+    for (int i = 0; i < contactEvents.endCount; ++i)
+    {
+        const b2ContactEndTouchEvent& e = contactEvents.endEvents[i];
+        if (!b2Shape_IsValid(e.shapeIdA) || !b2Shape_IsValid(e.shapeIdB)) continue;
+        EndContact(e.shapeIdA, e.shapeIdB);
+    }
 
-	return ret;
+
+    return ret;
 }
 
 PhysBody* Physics::CreateRectangle(int x, int y, int width, int height, bodyType type)
 {
-	b2BodyDef body;
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
 
-	if (type == DYNAMIC) body.type = b2_dynamicBody;
-	if (type == STATIC) body.type = b2_staticBody;
-	if (type == KINEMATIC) body.type = b2_kinematicBody;
+    b2BodyId b = b2CreateBody(world, &def);
 
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+    b2Polygon box = b2MakeBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    b2ShapeDef sdef = b2DefaultShapeDef();
+    sdef.density = 1.0f;
+    sdef.enableContactEvents = true;   // contact begin/end for this shape
+    sdef.enableSensorEvents = true;   // so it can participate in sensor overlaps
 
-	b2Body* b = world->CreateBody(&body);
-	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    b2CreatePolygonShape(b, &sdef, &box);
 
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	fixture.density = 1.0f;
-	b->ResetMassData();
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+    b2Body_SetUserData(b, ToUserData(pbody));
 
-	b->CreateFixture(&fixture);
-
-	PhysBody* pbody = new PhysBody();
-	pbody->body = b;
-	b->GetUserData().pointer = (uintptr_t) pbody;
-	pbody->width = width * 0.5f;
-	pbody->height = height * 0.5f;
-
-	return pbody;
+    return pbody;
 }
 
 PhysBody* Physics::CreateCircle(int x, int y, int radious, bodyType type)
 {
-	// Create BODY at position x,y
-	b2BodyDef body;
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
 
-	if (type == DYNAMIC) body.type = b2_dynamicBody;
-	if (type == STATIC) body.type = b2_staticBody;
-	if (type == KINEMATIC) body.type = b2_kinematicBody;
+    b2BodyId b = b2CreateBody(world, &def);
 
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+    b2Circle circle;
+    circle.center = { 0.0f, 0.0f };
+    circle.radius = PIXEL_TO_METERS(radious);
+    b2ShapeDef sdef = b2DefaultShapeDef();
+    sdef.density = 1.0f;
+    sdef.enableContactEvents = true;
+    sdef.enableSensorEvents = true;
 
-	// Add BODY to the world
-	b2Body* b = world->CreateBody(&body);
+    b2CreateCircleShape(b, &sdef, &circle);
 
-	// Create SHAPE
-	b2CircleShape circle;
-	circle.m_radius = PIXEL_TO_METERS(radious);
-
-	// Create FIXTURE
-	b2FixtureDef fixture;
-	fixture.shape = &circle;
-	fixture.density = 1.0f;
-	b->ResetMassData();
-
-	// Add fixture to the BODY
-	b->CreateFixture(&fixture);
-
-	// Create our custom PhysBody class
-	PhysBody* pbody = new PhysBody();
-	pbody->body = b;
-	b->GetUserData().pointer = (uintptr_t)pbody;
-	pbody->width = radious * 0.5f;
-	pbody->height = radious * 0.5f;
-
-	// Return our PhysBody class
-	return pbody;
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+    b2Body_SetUserData(b, ToUserData(pbody));
+    return pbody;
 }
 
 PhysBody* Physics::CreateRectangleSensor(int x, int y, int width, int height, bodyType type)
 {
-	// Create BODY at position x,y
-	b2BodyDef body;
-	if (type == DYNAMIC) body.type = b2_dynamicBody;
-	if (type == STATIC) body.type = b2_staticBody;
-	if (type == KINEMATIC) body.type = b2_kinematicBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
 
-	// Add BODY to the world
-	b2Body* b = world->CreateBody(&body);
+    b2BodyId b = b2CreateBody(world, &def);
 
-	// Create SHAPE
-	b2PolygonShape box;
-	box.SetAsBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    b2Polygon box = b2MakeBox(PIXEL_TO_METERS(width) * 0.5f, PIXEL_TO_METERS(height) * 0.5f);
+    b2ShapeDef sdef = b2DefaultShapeDef();
+    sdef.density = 1.0f;
+    sdef.isSensor = true; // 3.x sensor flag is on the shape def
+    sdef.enableContactEvents = true;
+    sdef.enableSensorEvents = true;
 
-	// Create FIXTURE
-	b2FixtureDef fixture;
-	fixture.shape = &box;
-	fixture.density = 1.0f;
-	fixture.isSensor = true;
+    b2CreatePolygonShape(b, &sdef, &box);
 
-	// Add fixture to the BODY
-	b->CreateFixture(&fixture);
-
-	// Create our custom PhysBody class
-	PhysBody* pbody = new PhysBody();
-	pbody->body = b;
-	b->GetUserData().pointer = (uintptr_t)pbody;
-	pbody->width = width;
-	pbody->height = height;
-
-	// Return our PhysBody class
-	return pbody;
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+    b2Body_SetUserData(b, ToUserData(pbody));
+    return pbody;
 }
 
 PhysBody* Physics::CreateChain(int x, int y, int* points, int size, bodyType type)
 {
-	// Create BODY at position x,y
-	b2BodyDef body;
-	if (type == DYNAMIC) body.type = b2_dynamicBody;
-	if (type == STATIC) body.type = b2_staticBody;
-	if (type == KINEMATIC) body.type = b2_kinematicBody;
-	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+    b2BodyDef def = b2DefaultBodyDef();
+    def.type = ToB2Type(type);
+    def.position = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
 
-	// Add BODY to the world
-	b2Body* b = world->CreateBody(&body);
+    b2BodyId b = b2CreateBody(world, &def);
 
-	// Create SHAPE
-	b2ChainShape shape;
-	b2Vec2* p = new b2Vec2[size / 2];
-	for (unsigned int i = 0; i < size / 2; ++i)
-	{
-		p[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
-		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
-	}
-	shape.CreateLoop(p, size / 2);
+    // Build CCW loop from pixel points
+    const int count = size / 2;
+    std::vector<b2Vec2> verts(count);
+    for (int i = 0; i < count; ++i)
+    {
+        verts[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
+        verts[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
+    }
 
-	// Create FIXTURE
-	b2FixtureDef fixture;
-	fixture.shape = &shape;
+    b2ChainDef cdef = b2DefaultChainDef();
+    cdef.points = verts.data();
+    cdef.count = count;
+    cdef.isLoop = true; // mirrors old CreateLoop
+    cdef.enableSensorEvents = true;
+    b2CreateChain(b, &cdef); // creates internal chain segment shapes
 
-	// Add fixture to the BODY
-	b->CreateFixture(&fixture);
-
-	// Clean-up temp array
-	delete p;
-
-	// Create our custom PhysBody class
-	PhysBody* pbody = new PhysBody();
-	pbody->body = b;
-	b->GetUserData().pointer = (uintptr_t)pbody;
-	pbody->width = pbody->height = 0;
-
-	// Return our PhysBody class
-	return pbody;
+    PhysBody* pbody = new PhysBody();
+    pbody->body = b;
+    b2Body_SetUserData(b, ToUserData(pbody));
+    return pbody;
 }
 
 // 
 bool Physics::PostUpdate()
 {
-	bool ret = true;
+    bool ret = true;
 
-	// Activate or deactivate debug mode
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
-		debug = !debug;
-	
-	//  Iterate all objects in the world and draw the bodies
-	if (debug)
-	{
-		for (b2Body* b = world->GetBodyList(); b; b = b->GetNext())
-		{
-			for (b2Fixture* f = b->GetFixtureList(); f; f = f->GetNext())
-			{
-				switch (f->GetType())
-				{
-					// Draw circles ------------------------------------------------
-				case b2Shape::e_circle:
-				{
-					b2CircleShape* shape = (b2CircleShape*)f->GetShape();
-					int width, height;
-					Engine::GetInstance().window.get()->GetWindowSize(width, height);
-					b2Vec2 pos = f->GetBody()->GetPosition();
-					Engine::GetInstance().render.get()->DrawCircle(METERS_TO_PIXELS(pos.x), 
-																   METERS_TO_PIXELS(pos.y), 
-																   METERS_TO_PIXELS(shape->m_radius) * Engine::GetInstance().window.get()->GetScale(),
-																   255, 255, 255);
-				}
-				break;
+    // Activate or deactivate debug mode
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+        debug = !debug;
 
-				// Draw polygons ------------------------------------------------
-				case b2Shape::e_polygon:
-				{
-					b2PolygonShape* polygonShape = (b2PolygonShape*)f->GetShape();
-					int32 count = polygonShape->m_count;
-					b2Vec2 prev, v;
+    // Debug draw via Box2D 3.x callbacks
+    if (debug)
+    {
+        if (B2_IS_NULL(world) == false)
+        {
+            b2DebugDraw dd = {};
+            dd.context = this;
 
-					for (int32 i = 0; i < count; ++i)
-					{
-						v = b->GetWorldPoint(polygonShape->m_vertices[i]);
-						if (i > 0)
-							Engine::GetInstance().render.get()->DrawLine(METERS_TO_PIXELS(prev.x), 
-																	     METERS_TO_PIXELS(prev.y), 
-																		 METERS_TO_PIXELS(v.x), 
-																		 METERS_TO_PIXELS(v.y), 
-																		 255, 255, 100);
+            // Enable only what you support (3.1 field names)
+            dd.drawShapes = true;
+            //dd.drawJoints = true;   // enable if you want joints drawn
+            //dd.drawBounds = true;   // AABBs
+            dd.drawContacts = true;   // contact points
 
-						prev = v;
-					}
+            // Implemented callbacks
+            dd.DrawSegmentFcn = &Physics::DrawSegmentCb;
+            dd.DrawPolygonFcn = &Physics::DrawPolygonCb;
+            dd.DrawSolidPolygonFcn = &Physics::DrawSolidPolygonCb;
+            dd.DrawCircleFcn = &Physics::DrawCircleCb;
+            dd.DrawSolidCircleFcn = &Physics::DrawSolidCircleCb;
 
-					v = b->GetWorldPoint(polygonShape->m_vertices[0]);
-					Engine::GetInstance().render.get()->DrawLine(METERS_TO_PIXELS(prev.x),
-																 METERS_TO_PIXELS(prev.y),
-																 METERS_TO_PIXELS(v.x),
-																 METERS_TO_PIXELS(v.y),
-																 255, 255, 100);
-				}
-				break;
+            // Defensive stubs (prevent nullptr calls inside Box2D)
+            dd.DrawSolidCapsuleFcn = &Physics::DrawSolidCapsuleStub; // correct 3.1 signature (p1,p2,radius,...) :contentReference[oaicite:1]{index=1}
+            dd.DrawPointFcn = &Physics::DrawPointStub;
+            dd.DrawStringFcn = &Physics::DrawStringStub;
+            dd.DrawTransformFcn = &Physics::DrawTransformStub;
 
-				// Draw chains contour -------------------------------------------
-				case b2Shape::e_chain:
-				{
-					b2ChainShape* shape = (b2ChainShape*)f->GetShape();
-					b2Vec2 prev, v;
+            b2World_Draw(world, &dd);
+        }
+    }
 
-					for (int32 i = 0; i < shape->m_count; ++i)
-					{
-						v = b->GetWorldPoint(shape->m_vertices[i]);
-						if (i > 0)
-							Engine::GetInstance().render.get()->DrawLine(METERS_TO_PIXELS(prev.x), 
-																	     METERS_TO_PIXELS(prev.y), 
-																	     METERS_TO_PIXELS(v.x), 
-																	     METERS_TO_PIXELS(v.y), 
-																		 100, 255, 100);
-						prev = v;
-					}
+    // Process bodies to delete after the world step
+    for (PhysBody* physBody : bodiesToDelete) {
+        b2DestroyBody(physBody->body);
+    }
+    bodiesToDelete.clear();
 
-					v = b->GetWorldPoint(shape->m_vertices[0]);
-					Engine::GetInstance().render.get()->DrawLine(METERS_TO_PIXELS(prev.x), 
-																 METERS_TO_PIXELS(prev.y), 
-															     METERS_TO_PIXELS(v.x), 
-															     METERS_TO_PIXELS(v.y), 
-																 100, 255, 100);
-				}
-				break;
-
-				// Draw a single segment(edge) ----------------------------------
-				case b2Shape::e_edge:
-				{
-					b2EdgeShape* shape = (b2EdgeShape*)f->GetShape();
-					b2Vec2 v1, v2;
-
-					v1 = b->GetWorldPoint(shape->m_vertex0);
-					v1 = b->GetWorldPoint(shape->m_vertex1);
-					Engine::GetInstance().render.get()->DrawLine(METERS_TO_PIXELS(v1.x), 
-																 METERS_TO_PIXELS(v1.y), 
-																 METERS_TO_PIXELS(v2.x), 
-																 METERS_TO_PIXELS(v2.y), 
-															     100, 100, 255);
-				}
-				break;
-				}
-
-			}
-		}
-	}
-
-	// Process bodies to delete after the world step
-	for (PhysBody* physBody : bodiesToDelete) {
-		world->DestroyBody(physBody->body);
-	}
-	bodiesToDelete.clear();
-
-	return ret;
+    return ret;
 }
 
 // Called before quitting
 bool Physics::CleanUp()
 {
-	LOG("Destroying physics world");
+    LOG("Destroying physics world");
 
-	// Delete the whole physics world!
-	delete world;
+    if (!B2_IS_NULL(world))
+    {
+        b2DestroyWorld(world);
+        world = b2_nullWorldId;
+    }
 
-	return true;
+    return true;
 }
 
-// Callback function to collisions with Box2D
-void Physics::BeginContact(b2Contact* contact)
+void Physics::BeginContact(b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	// Call the OnCollision listener function to bodies A and B, passing as inputs our custom PhysBody classes
-	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+    if (!b2Shape_IsValid(shapeA) || !b2Shape_IsValid(shapeB)) return;
 
-	if (physA && physA->listener != NULL && !IsPendingToDelete(physB)) {
-		if (physB) // Ensure physB is also valid
-		{
-			physA->listener->OnCollision(physA, physB);
-		}
-	}
+    b2BodyId bodyA = b2Shape_GetBody(shapeA);
+    b2BodyId bodyB = b2Shape_GetBody(shapeB);
+    if (B2_IS_NULL(bodyA) || B2_IS_NULL(bodyB)) return;
 
-	if (physB && physB->listener != NULL && !IsPendingToDelete(physB)) {
-		if(physA) // Ensure physA is also valid
-		{
-			physB->listener->OnCollision(physB, physA);
-		}
-	}
+    PhysBody* physA = BodyToPhys(bodyA);
+    PhysBody* physB = BodyToPhys(bodyB);
+    if (!physA || !physB) return;                  // user data cleared
+
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollision(physA, physB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollision(physB, physA);
 }
 
-// Callback function to collisions with Box2D
-void Physics::EndContact(b2Contact* contact)
+void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 {
-	// Call the OnCollision listener function to bodies A and B, passing as inputs our custom PhysBody classes
-	PhysBody* physA = (PhysBody*)contact->GetFixtureA()->GetBody()->GetUserData().pointer;
-	PhysBody* physB = (PhysBody*)contact->GetFixtureB()->GetBody()->GetUserData().pointer;
+    if (!b2Shape_IsValid(shapeA) || !b2Shape_IsValid(shapeB)) return;
 
-	if (physA && physA->listener != NULL && !IsPendingToDelete(physA)) {
-		if (physB) // Ensure physB is also valid
-		{
-			physA->listener->OnCollisionEnd(physA, physB);
-		}
-	}
+    b2BodyId bodyA = b2Shape_GetBody(shapeA);
+    b2BodyId bodyB = b2Shape_GetBody(shapeB);
+    if (B2_IS_NULL(bodyA) || B2_IS_NULL(bodyB)) return;
 
-	if (physB && physB->listener != NULL && !IsPendingToDelete(physB)) {
-		if (physA) // Ensure physA is also valid
-		{
- 			physB->listener->OnCollisionEnd(physB, physA);
-		}
-	}
+    PhysBody* physA = BodyToPhys(bodyA);
+    PhysBody* physB = BodyToPhys(bodyB);
+    if (!physA || !physB) return;
+    if (IsPendingToDelete(physA) || IsPendingToDelete(physB)) return;
+
+    if (physA->listener && !IsPendingToDelete(physA)) physA->listener->OnCollisionEnd(physA, physB);
+    if (physB->listener && !IsPendingToDelete(physB)) physB->listener->OnCollisionEnd(physB, physA);
 }
 
-void Physics::DeletePhysBody(PhysBody* physBody) {
-	bodiesToDelete.push_back(physBody);
+
+
+void Physics::DeletePhysBody(PhysBody* physBody)
+{
+    if (physBody && !B2_IS_NULL(physBody->body))
+    {
+        // Don’t change contact/sensor flags here (can mismatch event buffers).
+        // Just clear user data so late events won’t dereference a dangling PhysBody*.
+        b2Body_SetUserData(physBody->body, nullptr);
+    }
+    bodiesToDelete.push_back(physBody);
 }
+
+
 
 bool Physics::IsPendingToDelete(PhysBody* physBody) {
-	bool pendingToDelete = false;
-	for (PhysBody* _physBody : bodiesToDelete) {
-		if (_physBody == physBody) {
-			pendingToDelete = true;
-			break;
-		}
-	}
-
-	return pendingToDelete;
+    bool pendingToDelete = false;
+    for (PhysBody* _physBody : bodiesToDelete) {
+        if (_physBody == physBody) {
+            pendingToDelete = true;
+            break;
+        }
+    }
+    return pendingToDelete;
 }
 
-//--------------- PhysBody
+// --- Velocity helpers
+b2Vec2 Physics::GetLinearVelocity(const PhysBody* p) const
+{
+    return b2Body_GetLinearVelocity(p->body);
+}
+
+float Physics::GetXVelocity(const PhysBody* p) const
+{
+    return b2Body_GetLinearVelocity(p->body).x;
+}
+
+float Physics::GetYVelocity(const PhysBody* p) const
+{
+    return b2Body_GetLinearVelocity(p->body).y;
+}
+
+void Physics::SetLinearVelocity(PhysBody* p, const b2Vec2& v) const
+{
+    b2Body_SetLinearVelocity(p->body, v);
+}
+
+void Physics::SetLinearVelocity(PhysBody* p, float vx, float vy) const
+{
+    b2Vec2 v = { vx, vy };
+    b2Body_SetLinearVelocity(p->body, v);
+}
+
+void Physics::SetXVelocity(PhysBody* p, float vx) const
+{
+    b2Vec2 v = b2Body_GetLinearVelocity(p->body);
+    v.x = vx;
+    b2Body_SetLinearVelocity(p->body, v);
+}
+
+void Physics::SetYVelocity(PhysBody* p, float vy) const
+{
+    b2Vec2 v = b2Body_GetLinearVelocity(p->body);
+    v.y = vy;
+    b2Body_SetLinearVelocity(p->body, v);
+}
+
+// --- Impulse helper
+void Physics::ApplyLinearImpulseToCenter(PhysBody* p, float ix, float iy, bool wake) const
+{
+    b2Vec2 imp = { ix, iy };
+    b2Body_ApplyLinearImpulseToCenter(p->body, imp, wake);
+}
+
+//
+//--------------- PhysBody --------------------
+//
 
 void PhysBody::GetPosition(int& x, int& y) const
 {
-	b2Vec2 pos = body->GetPosition();
-	x = METERS_TO_PIXELS(pos.x) - (width);
-	y = METERS_TO_PIXELS(pos.y) - (height);
+    b2Vec2 pos = b2Body_GetPosition(body);
+    x = METERS_TO_PIXELS(pos.x);
+    y = METERS_TO_PIXELS(pos.y);
 }
 
 float PhysBody::GetRotation() const
 {
-	return RADTODEG * body->GetAngle();
+    b2Transform xf = b2Body_GetTransform(body);
+    return RADTODEG * b2Rot_GetAngle(xf.q);
 }
 
 bool PhysBody::Contains(int x, int y) const
 {
-	b2Vec2 p(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+    // World-space point in meters
+    const b2Vec2 p = { PIXEL_TO_METERS(x), PIXEL_TO_METERS(y) };
 
-	const b2Fixture* fixture = body->GetFixtureList();
+    // Get all shapes attached to this body
+    const int shapeCount = b2Body_GetShapeCount(body);
+    if (shapeCount == 0) return false;
 
-	while (fixture != NULL)
-	{
-		if (fixture->GetShape()->TestPoint(body->GetTransform(), p) == true)
-			return true;
-		fixture = fixture->GetNext();
-	}
+    std::vector<b2ShapeId> shapes(shapeCount);
+    b2Body_GetShapes(body, shapes.data(), shapeCount);
 
-	return false;
+    // Test point against each shape
+    for (int i = 0; i < shapeCount; ++i)
+    {
+        if (b2Shape_TestPoint(shapes[i], p))
+            return true;
+    }
+    return false;
 }
 
 int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& normal_y) const
 {
-	int ret = -1;
+    const b2Vec2 p1 = { PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1) };
+    const b2Vec2 p2 = { PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2) };
+    const b2Vec2 d = { p2.x - p1.x, p2.y - p1.y };
 
-	b2RayCastInput input;
-	b2RayCastOutput output;
+    b2WorldId world = b2Body_GetWorld(body);
+    b2QueryFilter qf = b2DefaultQueryFilter();
 
-	input.p1.Set(PIXEL_TO_METERS(x1), PIXEL_TO_METERS(y1));
-	input.p2.Set(PIXEL_TO_METERS(x2), PIXEL_TO_METERS(y2));
-	input.maxFraction = 1.0f;
+    const b2RayResult res = b2World_CastRayClosest(world, p1, d, qf);
+    if (!res.hit) return -1;
 
-	const b2Fixture* fixture = body->GetFixtureList();
+    normal_x = res.normal.x;
+    normal_y = res.normal.y;
 
-	while (fixture != NULL)
-	{
-		if (fixture->GetShape()->RayCast(&output, input, body->GetTransform(), 0) == true)
-		{
-			// do we want the normal ?
-
-			float fx = x2 - x1;
-			float fy = y2 - y1;
-			float dist = sqrtf((fx * fx) + (fy * fy));
-
-			normal_x = output.normal.x;
-			normal_y = output.normal.y;
-
-			return output.fraction * dist;
-		}
-		fixture = fixture->GetNext();
-	}
-
-	return ret;
+    const float fx = float(x2 - x1);
+    const float fy = float(y2 - y1);
+    const float distPixels = sqrtf(fx * fx + fy * fy);
+    return int(floorf(res.fraction * distPixels));
 }
+
+// --- helpers
+
+b2BodyType Physics::ToB2Type(bodyType t)
+{
+    switch (t)
+    {
+    case DYNAMIC:   return b2_dynamicBody;
+    case STATIC:    return b2_staticBody;
+    case KINEMATIC: return b2_kinematicBody;
+    default:        return b2_staticBody;
+    }
+}
+
+// --- Debug draw callbacks (map to your Render)
+
+void Physics::DrawSegmentCb(b2Vec2 p1, b2Vec2 p2, b2HexColor /*color*/, void* /*ctx*/)
+{
+    auto& r = *Engine::GetInstance().render.get();
+    r.DrawLine(METERS_TO_PIXELS(p1.x), METERS_TO_PIXELS(p1.y),
+        METERS_TO_PIXELS(p2.x), METERS_TO_PIXELS(p2.y),
+        255, 255, 255);
+}
+
+void Physics::DrawPolygonCb(const b2Vec2* v, int n, b2HexColor /*color*/, void* /*ctx*/)
+{
+    auto& r = *Engine::GetInstance().render.get();
+    for (int i = 0; i < n; ++i)
+    {
+        const b2Vec2 a = v[i];
+        const b2Vec2 b = v[(i + 1) % n];
+        r.DrawLine(METERS_TO_PIXELS(a.x), METERS_TO_PIXELS(a.y),
+            METERS_TO_PIXELS(b.x), METERS_TO_PIXELS(b.y),
+            255, 255, 100);
+    }
+}
+
+void Physics::DrawSolidPolygonCb(b2Transform xf, const b2Vec2* v, int n,
+    float /*radius*/, b2HexColor color, void* ctx)
+{
+    // Transform local verts to world and reuse wireframe draw
+    std::vector<b2Vec2> world(n);
+    for (int i = 0; i < n; ++i) world[i] = b2TransformPoint(xf, v[i]);
+    DrawPolygonCb(world.data(), n, color, ctx);
+}
+
+void Physics::DrawCircleCb(b2Vec2 center, float radius, b2HexColor /*color*/, void* /*ctx*/)
+{
+    auto& r = *Engine::GetInstance().render.get();
+    r.DrawCircle(METERS_TO_PIXELS(center.x), METERS_TO_PIXELS(center.y),
+        METERS_TO_PIXELS(radius) * Engine::GetInstance().window.get()->GetScale(),
+        255, 255, 255);
+}
+
+void Physics::DrawSolidCircleCb(b2Transform xf, float radius, b2HexColor color, void* ctx)
+{
+    // Center is xf.p; outline is fine for now
+    DrawCircleCb(xf.p, radius, color, ctx);
+}
+
+// ---- No-op stubs to avoid null calls -----------------------
+void Physics::DrawSolidCapsuleStub(b2Vec2, b2Vec2, float, b2HexColor, void*) {}
+void Physics::DrawPointStub(b2Vec2, float, b2HexColor, void*) {}
+void Physics::DrawStringStub(b2Vec2, const char*, b2HexColor, void*) {}
+void Physics::DrawTransformStub(b2Transform, void*) {}
