@@ -123,10 +123,11 @@ private:
 	int secondsSinceStartup = 0;
 
 	//Maximun frame duration in miliseconds.
-	int maxFrameDuration = 16;
+	int targetFrameRate = 60;
 
 	std::string gameTitle = "Platformer Game";
 
 	//L05 TODO 2: Declare a xml_document to load the config file
 	pugi::xml_document configFile;
+
 };

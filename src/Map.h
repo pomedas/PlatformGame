@@ -27,7 +27,7 @@ struct MapLayer
     Properties properties;
 
     // L07: TODO 6: Short function to get the gid value of i,j
-    int Get(int i, int j) const
+    unsigned int Get(int i, int j) const
     {
         return tiles[(j * width) + i];
     }
