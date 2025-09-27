@@ -48,42 +48,58 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
-	Physics* physics = Engine::GetInstance().physics.get();
+	GetPhysicsValues();
+	Move();
+	Jump();
+	ApplyPhysics();
+	Draw();
 
+	return true;
+}
+
+void Player::GetPhysicsValues() {
 	// Read current velocity
-	b2Vec2 velocity = physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; // Reset horizontal velocity
+	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+}
 
-	// Move left/right
+void Player::Move() {
+	// This function can be used for more complex movement logic if needed
+
+		// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2f * 16.0f;
+		velocity.x = -speed;
 	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2f * 16.0f;
+		velocity.x = speed;
 	}
+}
 
-	// Jump (impulse once)
+void Player::Jump() {
+	// This function can be used for more complex jump logic if needed
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
 		isJumping = true;
 	}
+}
 
+void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true) {
-		velocity.y = physics->GetYVelocity(pbody);
+		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
 	// Apply velocity via helper
-	physics->SetLinearVelocity(pbody, velocity);
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+}
 
+void Player::Draw() {
 	// Update render position using your PhysBody helper
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
-
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
-	return true;
 }
 
 bool Player::CleanUp()

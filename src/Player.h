@@ -26,10 +26,18 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+private:
+
+	void GetPhysicsValues();
+	void Move();
+	void Jump();
+	void ApplyPhysics();
+	void Draw();
+
 public:
 
 	//Declare player parameters
-	float speed = 5.0f;
+	float speed = 4.0f;
 	SDL_Texture* texture = NULL;
 
 	int texW, texH;
@@ -42,4 +50,6 @@ public:
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
+private: 
+	b2Vec2 velocity;
 };
