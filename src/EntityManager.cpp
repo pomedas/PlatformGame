@@ -62,18 +62,18 @@ bool EntityManager::CleanUp()
 	return ret;
 }
 
-Entity* EntityManager::CreateEntity(EntityType type)
+std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 {
-	Entity* entity = nullptr; 
+	std::shared_ptr<Entity> entity = std::make_shared<Entity>();
 
 	//L04: TODO 3a: Instantiate entity according to the type and add the new entity to the list of Entities
 	switch (type)
 	{
 	case EntityType::PLAYER:
-		entity = new Player();
+		entity = std::make_shared<Player>();
 		break;
 	case EntityType::ITEM:
-		entity = new Item();
+		entity = std::make_shared<Item>();
 		break;
 	default:
 		break;
@@ -84,20 +84,13 @@ Entity* EntityManager::CreateEntity(EntityType type)
 	return entity;
 }
 
-void EntityManager::DestroyEntity(Entity* entity)
+void EntityManager::DestroyEntity(std::shared_ptr<Entity> entity)
 {
-	for (auto it = entities.begin(); it != entities.end(); ++it)
-	{
-		if (*it == entity) {
-			(*it)->CleanUp();
-			delete* it; // Free the allocated memory
-			entities.erase(it); // Remove the entity from the list
-			break; // Exit the loop after removing the entity
-		}
-	}
+	entity->CleanUp();
+	entities.remove(entity);
 }
 
-void EntityManager::AddEntity(Entity* entity)
+void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 {
 	if ( entity != nullptr) entities.push_back(entity);
 }

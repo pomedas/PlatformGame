@@ -26,14 +26,14 @@ public:
 	bool CleanUp();
 
 	// Additional methods
-	Entity* CreateEntity(EntityType type);
+	std::shared_ptr<Entity> CreateEntity(EntityType type);
 
-	void DestroyEntity(Entity* entity);
+	void DestroyEntity(std::shared_ptr<Entity> entity);
 
-	void AddEntity(Entity* entity);
+	void AddEntity(std::shared_ptr<Entity> entity);
 
 public:
 
-	std::list<Entity*> entities;
+	std::list<std::shared_ptr<Entity>> entities;
 
 };
