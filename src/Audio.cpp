@@ -59,9 +59,7 @@ bool Audio::EnsureDeviceOpen() {
 bool Audio::EnsureStreams() {
     if (!EnsureDeviceOpen()) return false;
 
-    // Create (or recreate) simple streams if missing.
     if (!music_stream_) {
-        // src: will be set when we load music; dst: device format
         music_stream_ = SDL_CreateAudioStream(nullptr, &device_spec_);
         if (!music_stream_) {
             LOG("Audio: SDL_CreateAudioStream (music) failed: %s", SDL_GetError());
@@ -69,6 +67,8 @@ bool Audio::EnsureStreams() {
         }
         if (!SDL_BindAudioStream(device_, music_stream_)) {
             LOG("Audio: SDL_BindAudioStream (music) failed: %s", SDL_GetError());
+            SDL_DestroyAudioStream(music_stream_);
+            music_stream_ = nullptr;
             return false;
         }
     }
@@ -81,12 +81,15 @@ bool Audio::EnsureStreams() {
         }
         if (!SDL_BindAudioStream(device_, sfx_stream_)) {
             LOG("Audio: SDL_BindAudioStream (sfx) failed: %s", SDL_GetError());
+            SDL_DestroyAudioStream(sfx_stream_);
+            sfx_stream_ = nullptr;
             return false;
         }
     }
 
     return true;
 }
+
 
 bool Audio::Awake() {
     LOG("Audio: initializing SDL3 audio");
@@ -105,33 +108,43 @@ bool Audio::Awake() {
 }
 
 bool Audio::CleanUp() {
-    if (!active) return true;
+    // If audio is inactive or already quit elsewhere, don't touch SDL objects.
+    if (!active || !SDL_WasInit(SDL_INIT_AUDIO)) {
+        music_stream_ = nullptr;
+        sfx_stream_ = nullptr;
+        device_ = 0;
+        sfx_.clear();
+        FreeSound(music_data_);
+        return true;
+    }
 
     LOG("Audio: cleaning up");
 
-    // Free music stream/data
+    // Optional: stop pulling data while we tear down.
+    if (device_ != 0) SDL_PauseAudioDevice(device_);
+
+    // Destroy streams (auto-unbinds if bound).
     if (music_stream_) {
-        SDL_UnbindAudioStream(music_stream_);
         SDL_DestroyAudioStream(music_stream_);
         music_stream_ = nullptr;
     }
     FreeSound(music_data_);
 
-    // Free sfx stream and buffers
     if (sfx_stream_) {
-        SDL_UnbindAudioStream(sfx_stream_);
         SDL_DestroyAudioStream(sfx_stream_);
         sfx_stream_ = nullptr;
     }
     for (auto& s : sfx_) FreeSound(s);
     sfx_.clear();
 
+    // Close device after streams are gone.
     if (device_ != 0) {
         SDL_CloseAudioDevice(device_);
         device_ = 0;
     }
 
     SDL_QuitSubSystem(SDL_INIT_AUDIO);
+    active = false;
     return true;
 }
 
