@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Entity.h"
+#include "Animation.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
 
@@ -32,7 +33,7 @@ private:
 	void Move();
 	void Jump();
 	void ApplyPhysics();
-	void Draw();
+	void Draw(float dt);
 
 public:
 
@@ -52,5 +53,6 @@ public:
 
 private: 
 	b2Vec2 velocity;
+	AnimationSet anims;
 
 };
