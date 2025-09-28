@@ -197,10 +197,10 @@ bool Physics::PostUpdate()
             dd.context = this;
 
             // Enable only what you support (3.1 field names)
-            //dd.drawShapes = true;
-            //dd.drawJoints = true;   // enable if you want joints drawn
-            //dd.drawBounds = true;   // AABBs
-            //dd.drawContacts = true;   // contact points
+            dd.drawShapes = true;
+            dd.drawJoints = true;   // enable if you want joints drawn
+            dd.drawBounds = true;   // AABBs
+            dd.drawContacts = true;   // contact points
 
             // Implemented callbacks
             dd.DrawSegmentFcn = &Physics::DrawSegmentCb;
