@@ -73,8 +73,7 @@ bool Engine::Awake() {
 
     //L05 TODO 2: Add the LoadConfig() method here
 
-    // L05: TODO 3: Read the title from the config file and set the variable gameTitle, read maxFrameDuration and set the variable
-    // also read maxFrameDuration
+    // L05: TODO 3: Read the title from the config file and set the variable gameTitle, read targetFrameRate and set the variable
 
     //Iterates the module list and calls Awake on each module
     bool result = true;
