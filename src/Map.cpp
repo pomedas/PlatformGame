@@ -42,11 +42,9 @@ bool Map::Update(float dt)
         for (const auto& mapLayer : mapData.layers) {
             //L09 TODO 7: Check if the property Draw exist get the value, if it's true draw the lawyer
             if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) {
-                for (int i = 0; i < mapData.width; i++) {
-                    for (int j = 0; j < mapData.height; j++) {
-
-                        // L07 TODO 9: Complete the draw function
-
+				for (int i = 0; i < mapData.height; i++) {
+					for (int j = 0; j < mapData.width; j++) {
+						// L07 TODO 9: Complete the draw function
                         //Get the gid from tile
                         int gid = mapLayer->Get(i, j);
 
@@ -231,12 +229,12 @@ bool Map::Load(std::string path, std::string fileName)
 }
 
 // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
-Vector2D Map::MapToWorld(int x, int y) const
+Vector2D Map::MapToWorld(int i, int j) const
 {
     Vector2D ret;
 
-    ret.setX((float)(x * mapData.tileWidth));
-    ret.setY((float)(y * mapData.tileHeight));
+    ret.setX((float)(j * mapData.tileWidth));
+    ret.setY((float)(i * mapData.tileHeight));
 
     return ret;
 }
