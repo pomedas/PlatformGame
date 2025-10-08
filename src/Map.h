@@ -16,7 +16,7 @@ struct MapLayer
     // L07: TODO 6: Short function to get the gid value of i,j
     unsigned int Get(int i, int j) const
     {
-        return tiles[(j * width) + i];
+        return tiles[(i * width) + j];
     }
 };
 
@@ -88,7 +88,7 @@ public:
     bool Load(std::string path, std::string mapFileName);
 
     // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
-    Vector2D MapToWorld(int x, int y) const;
+    Vector2D MapToWorld(int i, int j) const;
 
 public: 
     std::string mapFileName;
