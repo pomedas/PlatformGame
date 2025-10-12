@@ -48,7 +48,7 @@ bool Item::Update(float dt)
 	position.setX((float)x);
 	position.setY((float)y);
 
-	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
+	Engine::GetInstance().render->DrawTexture(texture, position.getX() - texW / 2, position.getY() - texH / 2);
 
 	return true;
 }
