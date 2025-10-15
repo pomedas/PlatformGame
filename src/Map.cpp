@@ -51,7 +51,7 @@ bool Map::Update(float dt)
                         //Check if the gid is different from 0 - some tiles are empty
                         if (gid != 0) {
                             //L09: TODO 3: Obtain the tile set using GetTilesetFromTileId
-                            TileSet* tileSet = mapData.tilesets.front();
+                            TileSet* tileSet = GetTilesetFromTileId(gid);
                             if (tileSet != nullptr) {
                                 //Get the Rect from the tileSetTexture;
                                 SDL_Rect tileRect = tileSet->GetRect(gid);
@@ -74,7 +74,12 @@ bool Map::Update(float dt)
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
 	TileSet* set = nullptr;
-
+    for(const auto& tileset : mapData.tilesets) {
+        set = tileset;
+        if (gid >= tileset->firstGid && gid < tileset->tileCount) {
+			break;
+        }
+	}
     return set;
 }
 
