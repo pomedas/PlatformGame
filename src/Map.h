@@ -24,7 +24,6 @@ struct MapLayer
     int width;
     int height;
     std::vector<int> tiles;
-    Properties properties;
 
     // L07: TODO 6: Short function to get the gid value of i,j
     unsigned int Get(int i, int j) const
