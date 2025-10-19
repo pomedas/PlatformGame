@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
+#include "Map.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -28,10 +29,14 @@ bool Player::Awake() {
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
+	//L10: TODO 3; Load the spritesheet of the player
 	texture = Engine::GetInstance().textures->Load("Assets/Textures/player1.png");
 
+	//L10: TODO 3: Load the spritesheet animations from the TSX file
+
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	Engine::GetInstance().textures->GetSize(texture, texW, texH);
+	texW = 32;
+	texH = 32;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
@@ -56,15 +61,20 @@ bool Player::Update(float dt)
 
 	// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2f * 16.0f;
+		velocity.x = -speed;
+		//L10: TODO 6: Update the animation based on the player's state
+
 	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2f * 16.0f;
+		velocity.x = speed;
+		//L10: TODO 6: Update the animation based on the player's state
+
 	}
 
 	// Jump (impulse once)
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
 		physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		//L10: TODO 6: Update the animation based on the player's state
 		isJumping = true;
 	}
 
@@ -76,12 +86,17 @@ bool Player::Update(float dt)
 	// Apply velocity via helper
 	physics->SetLinearVelocity(pbody, velocity);
 
+	// L10: TODO 5: Update the animation based on the player's state (moving, jumping, idle)
+
 	// Update render position using your PhysBody helper
 	int x, y;
 	pbody->GetPosition(x, y);
 	position.setX((float)x);
 	position.setY((float)y);
 
+	//L10: TODO 7: Center the camera on the player
+
+	// L10: TODO 5: Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2);
 	return true;
 }
@@ -101,6 +116,8 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 		//reset the jump flag when touching the ground
 		isJumping = false;
+		//L10: TODO 6: Update the animation based on the player's state
+
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");

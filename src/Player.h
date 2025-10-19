@@ -41,4 +41,9 @@ public:
 	PhysBody* pbody;
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
+
+private: 
+	b2Vec2 velocity;
+	// L10: TODO 4: Declare an AnimationSet to hold all player animations
+
 };
