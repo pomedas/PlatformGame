@@ -32,6 +32,7 @@ private:
 	void GetPhysicsValues();
 	void Move();
 	void Jump();
+	void Teleport();
 	void ApplyPhysics();
 	void Draw(float dt);
 

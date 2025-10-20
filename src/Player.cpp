@@ -59,10 +59,18 @@ bool Player::Update(float dt)
 	GetPhysicsValues();
 	Move();
 	Jump();
+	Teleport();
 	ApplyPhysics();
 	Draw(dt);
 
 	return true;
+}
+
+void Player::Teleport() {
+	// Teleport the player to a specific position for testing purposes
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+		pbody->SetPosition(96, 96);
+	}
 }
 
 void Player::GetPhysicsValues() {
