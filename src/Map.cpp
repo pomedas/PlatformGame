@@ -76,7 +76,7 @@ TileSet* Map::GetTilesetFromTileId(int gid) const
 	TileSet* set = nullptr;
     for(const auto& tileset : mapData.tilesets) {
         set = tileset;
-        if (gid >= tileset->firstGid && gid < tileset->tileCount) {
+        if (gid >= tileset->firstGid && gid < tileset->firstGid + tileset->tileCount) {
 			break;
         }
 	}
