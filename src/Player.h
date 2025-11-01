@@ -27,6 +27,8 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+	Vector2D GetPosition();
+
 private:
 
 	void GetPhysicsValues();

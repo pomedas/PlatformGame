@@ -135,6 +135,7 @@ public:
 
 	// L10: TODO 7: Create a method to get the map size in pixels
 	Vector2D GetMapSizeInPixels();
+    Vector2D GetMapSizeInTiles();
 
     MapLayer* GetNavigationLayer();
 

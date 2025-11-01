@@ -37,7 +37,7 @@ bool Scene::Awake()
 
 	//Create a new enemy 
 	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
-	enemy1->position = Vector2D(264, 672);
+	enemy1->position = Vector2D(384, 672);
 
 	return ret;
 }
@@ -46,7 +46,7 @@ bool Scene::Awake()
 bool Scene::Start()
 {
 
-	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
+	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
@@ -98,4 +98,10 @@ bool Scene::CleanUp()
 	LOG("Freeing scene");
 
 	return true;
+}
+
+// Return the player position
+Vector2D Scene::GetPlayerPosition()
+{
+	return player->GetPosition();
 }

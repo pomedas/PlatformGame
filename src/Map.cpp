@@ -281,6 +281,11 @@ Vector2D Map::GetMapSizeInPixels()
     return sizeInPixels;
 }
 
+Vector2D Map::GetMapSizeInTiles()
+{
+    return Vector2D(mapData.width, mapData.height);
+}
+
 // Method to get the navigation layer from the map
 MapLayer* Map::GetNavigationLayer() {
     for (const auto& layer : mapData.layers) {

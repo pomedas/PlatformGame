@@ -32,6 +32,9 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
+	// Return the player position
+	Vector2D GetPlayerPosition();
+
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
