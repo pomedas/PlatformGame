@@ -14,7 +14,7 @@ Pathfinding::Pathfinding() {
 }
 
 Pathfinding::~Pathfinding() {
-    delete layerNav;
+
 }
 
 // L11: BFS Pathfinding methods
