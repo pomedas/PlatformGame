@@ -36,7 +36,7 @@ bool Enemy::Start() {
 	//Add physics to the enemy - initialize physics body
 	texW = 32;
 	texH = 32;
-	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX()+texW/2, (int)position.getY()+texH/2, texW / 2, bodyType::DYNAMIC);
 
 	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -49,7 +49,7 @@ bool Enemy::Start() {
 	//Get the position of the enemy
 	Vector2D pos = GetPosition();
 	//Convert to tile coordinates
-	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY());
+	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY()+1);
 	//Reset pathfinding
 	pathfinding->ResetPath(tilePos);
 
@@ -76,7 +76,7 @@ void Enemy::PerformPathfinding() {
 		//Get the position of the enemy
 		Vector2D pos = GetPosition();
 		//Convert to tile coordinates
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap((int)pos.getX(), (int)pos.getY());
+		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap((int)pos.getX(), (int)pos.getY()+1);
 		//Reset pathfinding
 		pathfinding->ResetPath(tilePos);
 	}
@@ -137,13 +137,14 @@ bool Enemy::CleanUp()
 }
 
 void Enemy::SetPosition(Vector2D pos) {
-	pbody->SetPosition((int)pos.getX(), (int)pos.getY());
+	pbody->SetPosition((int)(pos.getX()), (int)(pos.getY()));
 }
 
 Vector2D Enemy::GetPosition() {
 	int x, y;
 	pbody->GetPosition(x, y);
-	return Vector2D((float)x,(float)y);
+	// Adjust for center
+	return Vector2D((float)x-texW/2,(float)y-texH/2);
 }
 
 //Define OnCollision function for the enemy. 
