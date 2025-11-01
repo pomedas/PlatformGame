@@ -111,7 +111,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2main.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -132,7 +132,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL2main.lib</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies);SDL3.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories> .\vcpkg_installed\x64-windows\x64-windows\lib\manual-link</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
@@ -145,6 +145,7 @@
     <None Include="vcpkg.json" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Animation.cpp" />
     <ClCompile Include="src\Audio.cpp" />
     <ClCompile Include="src\Enemy.cpp" />
     <ClCompile Include="src\Engine.cpp" />

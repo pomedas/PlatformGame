@@ -8,6 +8,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
+#include "Map.h"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -20,24 +21,26 @@ Player::~Player() {
 
 bool Player::Awake() {
 
+	//L03: TODO 2: Initialize Player parameters
+	position = Vector2D(96, 96);
 	return true;
 }
 
 bool Player::Start() {
 
 	//L03: TODO 2: Initialize Player parameters
-	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
-	position.setX(parameters.attribute("x").as_int());
-	position.setY(parameters.attribute("y").as_int());
-	texW = parameters.attribute("w").as_int();
-	texH = parameters.attribute("h").as_int();
+	//L10: TODO 3; Load the spritesheet of the player
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
 
-	//Load animations
-	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	currentAnimation = &idle;
+	//L10: TODO 3: Load the spritesheet animations from the TSX file
+	std::unordered_map<int, std::string> animNames = { {0,"idle"},{11,"move"},{22,"jump"} };
+	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", animNames);
+	anims.SetCurrent("idle");
 
 	// L08 TODO 5: Add physics to the player - initialize physics body
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+	texW = 32;
+	texH = 32;
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
 
 	// L08 TODO 6: Assign player class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
 	pbody->listener = this;
@@ -45,73 +48,76 @@ bool Player::Start() {
 	// L08 TODO 7: Assign collider type
 	pbody->ctype = ColliderType::PLAYER;
 
-	// Set the gravity of the body
-	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
-
 	//initialize audio effect
-	pickCoinFxId = Engine::GetInstance().audio.get()->LoadFx("Assets/Audio/Fx/retro-video-game-coin-pickup-38299.ogg");
+	pickCoinFxId = Engine::GetInstance().audio->LoadFx("Assets/Audio/Fx/coin-collision-sound-342335.wav");
 
 	return true;
 }
 
 bool Player::Update(float dt)
 {
-	// L08 TODO 5: Add physics to the player - updated player position using physics
-	b2Vec2 velocity = b2Vec2(0, pbody->body->GetLinearVelocity().y);
 
-	if (!parameters.attribute("gravity").as_bool()) {
-		velocity = b2Vec2(0,0);
+	Physics* physics = Engine::GetInstance().physics.get();
+
+	// Read current velocity
+	b2Vec2 velocity = physics->GetLinearVelocity(pbody);
+	velocity = { 0, velocity.y }; // Reset horizontal velocity
+
+	// Move left/right
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
+		velocity.x = -speed;
+		//L10: TODO 6: Update the animation based on the player's state
+		anims.SetCurrent("move");
+	}
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
+		velocity.x = speed;
+		//L10: TODO 6: Update the animation based on the player's state
+		anims.SetCurrent("move");
 	}
 
-	// Move left
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
-		velocity.x = -0.2 * 16;
-	}
-
-	// Move right
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
-		velocity.x = 0.2 * 16;
-	}
-
-	// Move Up
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_W) == KEY_REPEAT) {
-		velocity.y = -0.2 * 16;
-	}
-
-	// Move down
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_S) == KEY_REPEAT) {
-		velocity.y = 0.2 * 16;
-	}
-	
-	//Jump
-	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		// Apply an initial upward force
-		pbody->body->ApplyLinearImpulseToCenter(b2Vec2(0, -jumpForce), true);
+	// Jump (impulse once)
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
+		physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
+		//L10: TODO 6: Update the animation based on the player's state
+		anims.SetCurrent("jump");
 		isJumping = true;
 	}
 
-	// If the player is jumpling, we don't want to apply gravity, we use the current velocity prduced by the jump
-	if(isJumping == true)
-	{
-		velocity.y = pbody->body->GetLinearVelocity().y;
+	// Preserve vertical speed while jumping
+	if (isJumping == true) {
+		velocity.y = physics->GetYVelocity(pbody);
 	}
 
-	// Apply the velocity to the player
-	pbody->body->SetLinearVelocity(velocity);
+	// Apply velocity via helper
+	physics->SetLinearVelocity(pbody, velocity);
 
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+	// L10: TODO 5: Update the animation based on the player's state (moving, jumping, idle)
+	anims.Update(dt);
+	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
-	currentAnimation->Update();
+	// Update render position using your PhysBody helper
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
+
+	//L10: TODO 7: Center the camera on the player
+	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
+	float limitLeft = Engine::GetInstance().render->camera.w / 4;
+	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
+	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
+		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+	}
+
+	// L10: TODO 5: Draw the player using the texture and the current animation frame
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
 	return true;
 }
 
 bool Player::CleanUp()
 {
 	LOG("Cleanup player");
-	Engine::GetInstance().textures.get()->UnLoad(texture);
+	Engine::GetInstance().textures->UnLoad(texture);
 	return true;
 }
 
@@ -121,12 +127,15 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 	{
 	case ColliderType::PLATFORM:
 		LOG("Collision PLATFORM");
+		//reset the jump flag when touching the ground
 		isJumping = false;
+		//L10: TODO 6: Update the animation based on the player's state
+		anims.SetCurrent("idle");
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
-		Engine::GetInstance().audio.get()->PlayFx(pickCoinFxId);
-		Engine::GetInstance().physics.get()->DeletePhysBody(physB); // Deletes the body of the item from the physics world
+		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
+		physB->listener->Destroy();
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");
@@ -154,15 +163,3 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 	}
 }
 
-void Player::SetPosition(Vector2D pos) {
-	pos.setX(pos.getX() + texW / 2);
-	pos.setY(pos.getY() + texH / 2);
-	b2Vec2 bodyPos = b2Vec2(PIXEL_TO_METERS(pos.getX()), PIXEL_TO_METERS(pos.getY()));
-	pbody->body->SetTransform(bodyPos,0);
-}
-
-Vector2D Player::GetPosition() {
-	b2Vec2 bodyPos = pbody->body->GetTransform().p;
-	Vector2D pos = Vector2D(METERS_TO_PIXELS(bodyPos.x), METERS_TO_PIXELS(bodyPos.y));
-	return pos;
-}

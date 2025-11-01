@@ -1,68 +1,55 @@
 #pragma once
+#include <vector>
+#include <string>
+#include <unordered_map>
+#include <SDL3/SDL_rect.h>
 
-#include "SDL2/SDL_Rect.h"
-#include "pugixml.hpp"
-#define MAX_FRAMES 400
+struct AnimFrame {
+    SDL_Rect rect{};
+    int durationMs = 100;
+};
 
 class Animation {
-
 public:
-	float speed = 1.0f;
-	SDL_Rect frames[MAX_FRAMES];
-	bool loop = true;
-	// Allows the animation to keep going back and forth
-	bool pingpong = false;
-	int loopCount = 0;
+    Animation();
+    void AddFrame(const SDL_Rect& r, int durationMs);
+    void SetLoop(bool v);
+    void Reset();
+    bool HasFinishedOnce() const;
+    void Update(float dt);
+    const SDL_Rect& GetCurrentFrame() const;
+    int GetFrameCount() const;
 
-	float currentFrame = 0.0f;
-	int totalFrames = 0;
-	int pingpongDirection = 1;
+private:
+    std::vector<AnimFrame> frames_;
+    int currentIndex_ = 0;
+    int timeInFrameMs_ = 0;
+    bool loop_ = true;
+    bool finishedOnce_ = false;
 
+    static SDL_Rect kEmpty_;
+};
 
+class AnimationSet {
 public:
-	void PushBack(const SDL_Rect& rect) {
-		frames[totalFrames++] = rect;
-	}
+    AnimationSet();
 
-	void Reset() {
-		currentFrame = 0;
-	}
+    // load from TSX with aliases {baseTileId -> name}
+    bool LoadFromTSX(const char* tsxPath,
+        const std::unordered_map<int, std::string>& aliases);
 
-	bool HasFinished() {
-		return !loop && !pingpong && loopCount > 0;
-	}
+    // manage animations
+    void SetCurrent(const std::string& name);
+    void Update(float dtSeconds);
+    const SDL_Rect& GetCurrentFrame() const;
+    const std::string& GetCurrentName() const;
 
-	void Update() {
-		currentFrame += speed;
-		if (currentFrame >= totalFrames) {
-			currentFrame = (loop || pingpong) ? 0.0f : totalFrames - 1;
-			++loopCount;
+    bool Has(const std::string& name) const;
 
-			if (pingpong)
-				pingpongDirection = -pingpongDirection;
-		}
-	}
+private:
+    int tileW_ = 0, tileH_ = 0, columns_ = 0;
+    std::unordered_map<std::string, Animation> clips_;
+    std::string currentName_;
 
-	const SDL_Rect& GetCurrentFrame() const {
-		int actualFrame = static_cast<int>(currentFrame);
-
-		if (pingpongDirection == -1) actualFrame = totalFrames - static_cast<int>(currentFrame);
-
-		return frames[actualFrame];
-	}
-
-	void LoadAnimations(pugi::xml_node animationNode)
-	{
-		speed = animationNode.attribute("speed").as_float();
-		loop = animationNode.attribute("loop").as_bool();
-
-		for (pugi::xml_node animation = animationNode.child("frame"); animation; animation = animation.next_sibling("frame"))
-		{
-			PushBack({  animation.attribute("x").as_int(),
-						animation.attribute("y").as_int(),
-						animation.attribute("w").as_int(),
-						animation.attribute("h").as_int() });
-		}
-
-	}
+    static SDL_Rect TileIdToRect(int tileid, int columns, int tileW, int tileH);
 };

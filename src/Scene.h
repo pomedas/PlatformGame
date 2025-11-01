@@ -32,12 +32,8 @@ public:
 	// Called before quitting
 	bool CleanUp();
 
-	// Return the player position
-	Vector2D GetPlayerPosition();
-
 private:
-	SDL_Texture* mouseTileTex = nullptr;
 
 	//L03: TODO 3b: Declare a Player attribute
-	Player* player;
+	std::shared_ptr<Player> player;
 };

@@ -40,7 +40,7 @@ bool Map::Update(float dt)
         // L07 TODO 5: Prepare the loop to draw all tiles in a layer + DrawTexture()
         // iterate all tiles in a layer
         for (const auto& mapLayer : mapData.layers) {
-            //Check if the property Draw exist get the value, if it's true draw the lawyer
+            //L09 TODO 7: Check if the property Draw exist get the value, if it's true draw the lawyer
             if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) {
                 for (int i = 0; i < mapData.width; i++) {
                     for (int j = 0; j < mapData.height; j++) {
@@ -49,6 +49,7 @@ bool Map::Update(float dt)
 
                         //Get the gid from tile
                         int gid = mapLayer->Get(i, j);
+
                         //Check if the gid is different from 0 - some tiles are empty
                         if (gid != 0) {
                             //L09: TODO 3: Obtain the tile set using GetTilesetFromTileId
@@ -59,7 +60,7 @@ bool Map::Update(float dt)
                                 //Get the screen coordinates from the tile coordinates
                                 Vector2D mapCoord = MapToWorld(i, j);
                                 //Draw the texture
-                                Engine::GetInstance().render->DrawTexture(tileSet->texture, mapCoord.getX(), mapCoord.getY(), &tileRect);
+                                Engine::GetInstance().render->DrawTexture(tileSet->texture, (int)mapCoord.getX(), (int)mapCoord.getY(), &tileRect);
                             }
                         }
                     }
@@ -74,15 +75,13 @@ bool Map::Update(float dt)
 // L09: TODO 2: Implement function to the Tileset based on a tile id
 TileSet* Map::GetTilesetFromTileId(int gid) const
 {
-	TileSet* set = nullptr;
-
+    TileSet* set = nullptr;
     for (const auto& tileset : mapData.tilesets) {
-    	if (gid >= tileset->firstGid && gid < (tileset->firstGid + tileset->tileCount)) {
-			set = tileset;
-			break;
-		}
+        set = tileset;
+        if (gid >= tileset->firstGid && gid < tileset->firstGid + tileset->tileCount) {
+            break;
+        }
     }
-
     return set;
 }
 
@@ -133,19 +132,6 @@ bool Map::Load(std::string path, std::string fileName)
         mapData.height = mapFileXML.child("map").attribute("height").as_int();
         mapData.tileWidth = mapFileXML.child("map").attribute("tilewidth").as_int();
         mapData.tileHeight = mapFileXML.child("map").attribute("tileheight").as_int();
-
-        // L10: TODO 2: Define a property to store the MapType and Load it from the map
-        std::string orientationStr = mapFileXML.child("map").attribute("orientation").as_string();
-        if (orientationStr == "orthogonal") {
-            mapData.orientation = MapOrientation::ORTOGRAPHIC;
-        }
-        else if (orientationStr == "isometric") {
-            mapData.orientation = MapOrientation::ISOMETRIC;
-        }
-        else {
-            LOG("Map orientation not found");
-            ret = false;
-        }
 
         // L06: TODO 4: Implement the LoadTileSet function to load the tileset properties
        
@@ -221,7 +207,6 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Successfully parsed map XML file :%s", fileName.c_str());
             LOG("width : %d height : %d", mapData.width, mapData.height);
             LOG("tile_width : %d tile_height : %d", mapData.tileWidth, mapData.tileHeight);
-
             LOG("Tilesets----");
 
             //iterate the tilesets
@@ -255,35 +240,8 @@ Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
 
-    // L09: TODO 3: Get the screen coordinates of tile positions for isometric maps 
-    if (mapData.orientation == MapOrientation::ORTOGRAPHIC) {
-        ret.setX(x * mapData.tileWidth);
-        ret.setY(y * mapData.tileHeight);
-    }
-	else if (mapData.orientation == MapOrientation::ISOMETRIC) {
-        ret.setX(x * mapData.tileWidth / 2 - y * mapData.tileWidth / 2);
-        ret.setY(x * mapData.tileHeight / 2 + y * mapData.tileHeight / 2);
-    }
-
-    return ret;
-}
-
-// L10: TODO 5: Add method WorldToMap to obtain  map coordinates from screen coordinates 
-Vector2D Map::WorldToMap(int x, int y) {
-
-    Vector2D ret(0, 0);
-
-    if (mapData.orientation == MapOrientation::ORTOGRAPHIC) {
-        ret.setX(x / mapData.tileWidth);
-        ret.setY(y / mapData.tileHeight);
-    }
-
-    if (mapData.orientation == MapOrientation::ISOMETRIC) {
-        float half_width = mapData.tileWidth / 2;
-        float half_height = mapData.tileHeight / 2;
-        ret.setX(int((x / half_width + y / half_height) / 2));
-        ret.setY(int((y / half_height - (x / half_width)) / 2));
-    }
+    ret.setX((float)(x * mapData.tileWidth));
+    ret.setY((float)(y * mapData.tileHeight));
 
     return ret;
 }
@@ -305,28 +263,15 @@ bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
     return ret;
 }
 
-MapLayer* Map::GetNavigationLayer() {
-    for (const auto& layer : mapData.layers) {
-		if (layer->properties.GetProperty("Navigation") != NULL && 
-            layer->properties.GetProperty("Navigation")->value) {
-			return layer;
-		}
-	}
-
-	return nullptr;
-}
-
-// L09: TODO 7: Implement a method to get the value of a custom property
-Properties::Property* Properties::GetProperty(const char* name)
+// L10: TODO 7: Create a method to get the map size in pixels
+Vector2D Map::GetMapSizeInPixels()
 {
-    for (const auto& property : propertyList) {
-        if (property->name == name) {
-			return property;
-		}
-    }
-
-    return nullptr;
+    Vector2D sizeInPixels;
+    sizeInPixels.setX((float)(mapData.width * mapData.tileWidth));
+    sizeInPixels.setY((float)(mapData.height * mapData.tileHeight));
+    return sizeInPixels;
 }
+
 
 
 

@@ -1,9 +1,8 @@
 <!-- Config file for the engine -->
-
 <config>
   <engine>
     <title>My platformer game</title>
-    <maxFrameDuration value="16"/>
+    <targetFrameRate value="60"/>
   </engine>
 
   <render>
@@ -17,54 +16,4 @@
     <resizable value="false"/>
     <fullscreen_window value="false"/>
   </window>
-
-  <scene>
-    <map path="Assets/Maps/" name="MapTemplate.tmx"/>
-    <entities>
-      <player x="240" y="96" w="32" h ="32" texture="Assets/Textures/player/Idle.png" gravity="true">
-        <animations>
-          <idle loop="true" speed ="0.5">
-            <frame x="0" y="0" w="32" h="32"/>
-            <frame x="32" y="0" w="32" h="32"/>
-            <frame x="64" y="0" w="32" h="32"/>
-            <frame x="96" y="0" w="32" h="32"/>
-            <frame x="128" y="0" w="32" h="32"/>
-            <frame x="160" y="0" w="32" h="32"/>
-            <frame x="192" y="0" w="32" h="32"/>
-            <frame x="224" y="0" w="32" h="32"/>
-            <frame x="256" y="0" w="32" h="32"/>
-          </idle>
-        </animations>
-      </player>
-      <items>
-        <item name="coin" x="200" y="672" w="32" h="32" texture="Assets/Textures/goldCoin.png" gravity="true">
-          <animations>
-            <idle loop="true" speed ="0.5">
-              <frame x="0" y="0" w="32" h="32"/>
-            </idle>
-          </animations>
-        </item>
-      </items>
-
-      <enemies>
-        <enemy name="badguy" x="448" y="350" w="32" h="32" texture="Assets/Textures/enemy/Idle.png" gravity="true">
-          <animations>
-            <idle loop="true" speed ="0.5">
-              <frame x="0" y="0" w="32" h="32"/>
-              <frame x="32" y="0" w="32" h="32"/>
-              <frame x="64" y="0" w="32" h="32"/>
-              <frame x="96" y="0" w="32" h="32"/>
-              <frame x="128" y="0" w="32" h="32"/>
-              <frame x="160" y="0" w="32" h="32"/>
-              <frame x="192" y="0" w="32" h="32"/>
-              <frame x="224" y="0" w="32" h="32"/>
-              <frame x="256" y="0" w="32" h="32"/>
-            </idle>
-          </animations>
-          </enemy>
-      </enemies>
-            
-    </entities>
-  </scene>
-	
 </config>
