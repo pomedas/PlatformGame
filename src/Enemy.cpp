@@ -7,15 +7,16 @@
 #include "Scene.h"
 #include "Log.h"
 #include "Physics.h"
+#include "EntityManager.h"
 #include "Map.h"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY)
 {
-
+	name = "Enemy";
 }
 
 Enemy::~Enemy() {
-	delete pathfinding;
+
 }
 
 bool Enemy::Awake() {
@@ -24,30 +25,32 @@ bool Enemy::Awake() {
 
 bool Enemy::Start() {
 
-	//initilize textures
-	texture = Engine::GetInstance().textures.get()->Load(parameters.attribute("texture").as_string());
-	position.setX(parameters.attribute("x").as_int());
-	position.setY(parameters.attribute("y").as_int());
-	texW = parameters.attribute("w").as_int();
-	texH = parameters.attribute("h").as_int();
+	// load
+	std::unordered_map<int, std::string> aliases = { {0,"idle"} };
+	anims.LoadFromTSX("Assets/Textures/enemy_Spritesheet.tsx", aliases);
+	anims.SetCurrent("idle");
 
-	//Load animations
-	idle.LoadAnimations(parameters.child("animations").child("idle"));
-	currentAnimation = &idle;
-	
-	//Add a physics to an item - initialize the physics body
-	pbody = Engine::GetInstance().physics.get()->CreateCircle((int)position.getX() + texH / 2, (int)position.getY() + texH / 2, texH / 2, bodyType::DYNAMIC);
+	//Initialize Player parameters
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/enemy_spritesheet.png");
 
-	//Assign collider type
+	//Add physics to the enemy - initialize physics body
+	texW = 32;
+	texH = 32;
+	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
+
+	//Assign enemy class (using "this") to the listener of the pbody. This makes the Physics module to call the OnCollision method
+	pbody->listener = this;
+
+	//ssign collider type
 	pbody->ctype = ColliderType::ENEMY;
 
-	// Set the gravity of the body
-	if (!parameters.attribute("gravity").as_bool()) pbody->body->SetGravityScale(0);
-
 	// Initialize pathfinding
-	pathfinding = new Pathfinding();
+	pathfinding = std::make_shared<Pathfinding>();
+	//Get the position of the enemy
 	Vector2D pos = GetPosition();
-	Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(), pos.getY());
+	//Convert to tile coordinates
+	Vector2D tilePos = Engine::GetInstance().map->WorldToMap((int)pos.getX(), (int)pos.getY());
+	//Reset pathfinding
 	pathfinding->ResetPath(tilePos);
 
 	return true;
@@ -55,50 +58,100 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+	PerformPathfinding();
+	GetPhysicsValues();
+	Move();
+	ApplyPhysics();
+	Draw(dt);
+
+	return true;
+}
+
+void Enemy::PerformPathfinding() {
+
 	// Pathfinding testing inputs
+
+	// Reset pathfinding with R key
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_R) == KEY_DOWN) {
+		//Get the position of the enemy
 		Vector2D pos = GetPosition();
-		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap(pos.getX(),pos.getY());
+		//Convert to tile coordinates
+		Vector2D tilePos = Engine::GetInstance().map.get()->WorldToMap((int)pos.getX(), (int)pos.getY());
+		//Reset pathfinding
 		pathfinding->ResetPath(tilePos);
 	}
 
+	// Propagate BFS with J key
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_DOWN) {
 		pathfinding->PropagateBFS();
 	}
 
+	// Propagate BFS continuously with LShift + J
 	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_J) == KEY_REPEAT &&
 		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
 		pathfinding->PropagateBFS();
 	}
 
-	// L08 TODO 4: Add a physics to an item - update the position of the object from the physics.  
-	b2Transform pbodyPos = pbody->body->GetTransform();
-	position.setX(METERS_TO_PIXELS(pbodyPos.p.x) - texH / 2);
-	position.setY(METERS_TO_PIXELS(pbodyPos.p.y) - texH / 2);
+}
 
-	Engine::GetInstance().render.get()->DrawTexture(texture, (int)position.getX(), (int)position.getY(), &currentAnimation->GetCurrentFrame());
-	currentAnimation->Update();
+void Enemy::GetPhysicsValues() {
+	// Read current velocity
+	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+	velocity = { 0, velocity.y }; 
+}
 
-	// Draw pathfinding 
+void Enemy::Move() {
+
+	// Move 
+}
+
+void Enemy::ApplyPhysics() {
+
+	// Apply velocity via helper
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+}
+
+void Enemy::Draw(float dt) {
+
+	anims.Update(dt);
+	const SDL_Rect& animFrame = anims.GetCurrentFrame();
+
+	// Update render position using your PhysBody helper
+	int x, y;
+	pbody->GetPosition(x, y);
+	position.setX((float)x);
+	position.setY((float)y);
+
+	// Draw pathfinding debug
 	pathfinding->DrawPath();
 
-	return true;
+	//Draw the player using the texture and the current animation frame
+	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
 }
 
 bool Enemy::CleanUp()
 {
+	LOG("Cleanup enemy");
+	Engine::GetInstance().textures->UnLoad(texture);
 	return true;
 }
 
 void Enemy::SetPosition(Vector2D pos) {
-	pos.setX(pos.getX() + texW / 2);
-	pos.setY(pos.getY() + texH / 2);
-	b2Vec2 bodyPos = b2Vec2(PIXEL_TO_METERS(pos.getX()), PIXEL_TO_METERS(pos.getY()));
-	pbody->body->SetTransform(bodyPos, 0);
+	pbody->SetPosition((int)pos.getX(), (int)pos.getY());
 }
 
 Vector2D Enemy::GetPosition() {
-	b2Vec2 bodyPos = pbody->body->GetTransform().p;
-	Vector2D pos = Vector2D(METERS_TO_PIXELS(bodyPos.x), METERS_TO_PIXELS(bodyPos.y));
-	return pos;
+	int x, y;
+	pbody->GetPosition(x, y);
+	return Vector2D((float)x,(float)y);
+}
+
+//Define OnCollision function for the enemy. 
+void Enemy::OnCollision(PhysBody* physA, PhysBody* physB) {
+
+}
+
+void Enemy::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
+{
+
 }

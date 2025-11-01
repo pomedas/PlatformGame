@@ -191,7 +191,7 @@ bool Map::Load(std::string path, std::string fileName)
                         int gid = mapLayer->Get(i, j);
                         if (gid == 49) {
                             Vector2D mapCoord = MapToWorld(i, j);
-                            PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle(mapCoord.getX()+ mapData.tileWidth/2, mapCoord.getY()+ mapData.tileHeight/2, mapData.tileWidth, mapData.tileHeight, STATIC);
+                            PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle((int)(mapCoord.getX()+ mapData.tileWidth/2), (int)(mapCoord.getY()+ mapData.tileHeight/2), mapData.tileWidth, mapData.tileHeight, STATIC);
                             c1->ctype = ColliderType::PLATFORM;
                         }
                     }
@@ -246,6 +246,15 @@ Vector2D Map::MapToWorld(int x, int y) const
     return ret;
 }
 
+Vector2D Map::WorldToMap(int x, int y) {
+
+    Vector2D ret(0, 0);
+    ret.setX(x / mapData.tileWidth);
+    ret.setY(y / mapData.tileHeight);
+
+    return ret;
+}
+
 // L09: TODO 6: Load a group of properties from a node and fill a list with it
 bool Map::LoadProperties(pugi::xml_node& node, Properties& properties)
 {
@@ -270,6 +279,18 @@ Vector2D Map::GetMapSizeInPixels()
     sizeInPixels.setX((float)(mapData.width * mapData.tileWidth));
     sizeInPixels.setY((float)(mapData.height * mapData.tileHeight));
     return sizeInPixels;
+}
+
+// Method to get the navigation layer from the map
+MapLayer* Map::GetNavigationLayer() {
+    for (const auto& layer : mapData.layers) {
+        if (layer->properties.GetProperty("Navigation") != NULL &&
+            layer->properties.GetProperty("Navigation")->value) {
+            return layer;
+        }
+    }
+
+    return nullptr;
 }
 
 

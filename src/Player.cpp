@@ -28,16 +28,16 @@ bool Player::Awake() {
 
 bool Player::Start() {
 
-	//L03: TODO 2: Initialize Player parameters
-	//L10: TODO 3; Load the spritesheet of the player
-	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
-
-	//L10: TODO 3: Load the spritesheet animations from the TSX file
-	std::unordered_map<int, std::string> animNames = { {0,"idle"},{11,"move"},{22,"jump"} };
-	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", animNames);
+	// load
+	std::unordered_map<int, std::string> aliases = { {0,"idle"},{11,"move"},{22,"jump"} };
+	anims.LoadFromTSX("Assets/Textures/PLayer2_Spritesheet.tsx", aliases);
 	anims.SetCurrent("idle");
 
+	//L03: TODO 2: Initialize Player parameters
+	texture = Engine::GetInstance().textures->Load("Assets/Textures/player2_spritesheet.png");
+
 	// L08 TODO 5: Add physics to the player - initialize physics body
+	//Engine::GetInstance().textures->GetSize(texture, texW, texH);
 	texW = 32;
 	texH = 32;
 	pbody = Engine::GetInstance().physics->CreateCircle((int)position.getX(), (int)position.getY(), texW / 2, bodyType::DYNAMIC);
@@ -56,42 +56,63 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	GetPhysicsValues();
+	Move();
+	Jump();
+	Teleport();
+	ApplyPhysics();
+	Draw(dt);
 
-	Physics* physics = Engine::GetInstance().physics.get();
+	return true;
+}
 
+void Player::Teleport() {
+	// Teleport the player to a specific position for testing purposes
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_T) == KEY_DOWN) {
+		pbody->SetPosition(96, 96);
+	}
+}
+
+void Player::GetPhysicsValues() {
 	// Read current velocity
-	b2Vec2 velocity = physics->GetLinearVelocity(pbody);
-	velocity = { 0, velocity.y }; // Reset horizontal velocity
+	velocity = Engine::GetInstance().physics->GetLinearVelocity(pbody);
+	velocity = { 0, velocity.y }; // Reset horizontal velocity by default, this way the player stops when no key is pressed
+}
+
+void Player::Move() {
 
 	// Move left/right
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_A) == KEY_REPEAT) {
 		velocity.x = -speed;
-		//L10: TODO 6: Update the animation based on the player's state
 		anims.SetCurrent("move");
 	}
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_D) == KEY_REPEAT) {
 		velocity.x = speed;
-		//L10: TODO 6: Update the animation based on the player's state
 		anims.SetCurrent("move");
 	}
+}
 
-	// Jump (impulse once)
+void Player::Jump() {
+	// This function can be used for more complex jump logic if needed
 	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN && isJumping == false) {
-		physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
-		//L10: TODO 6: Update the animation based on the player's state
+		Engine::GetInstance().physics->ApplyLinearImpulseToCenter(pbody, 0.0f, -jumpForce, true);
 		anims.SetCurrent("jump");
 		isJumping = true;
 	}
+}
 
+void Player::ApplyPhysics() {
 	// Preserve vertical speed while jumping
 	if (isJumping == true) {
-		velocity.y = physics->GetYVelocity(pbody);
+		velocity.y = Engine::GetInstance().physics->GetYVelocity(pbody);
 	}
 
 	// Apply velocity via helper
-	physics->SetLinearVelocity(pbody, velocity);
+	Engine::GetInstance().physics->SetLinearVelocity(pbody, velocity);
+}
 
-	// L10: TODO 5: Update the animation based on the player's state (moving, jumping, idle)
+void Player::Draw(float dt) {
+
 	anims.Update(dt);
 	const SDL_Rect& animFrame = anims.GetCurrentFrame();
 
@@ -111,7 +132,6 @@ bool Player::Update(float dt)
 
 	// L10: TODO 5: Draw the player using the texture and the current animation frame
 	Engine::GetInstance().render->DrawTexture(texture, x - texW / 2, y - texH / 2, &animFrame);
-	return true;
 }
 
 bool Player::CleanUp()
@@ -129,7 +149,6 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		LOG("Collision PLATFORM");
 		//reset the jump flag when touching the ground
 		isJumping = false;
-		//L10: TODO 6: Update the animation based on the player's state
 		anims.SetCurrent("idle");
 		break;
 	case ColliderType::ITEM:
@@ -162,4 +181,3 @@ void Player::OnCollisionEnd(PhysBody* physA, PhysBody* physB)
 		break;
 	}
 }
-

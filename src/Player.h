@@ -12,7 +12,7 @@ class Player : public Entity
 public:
 
 	Player();
-	
+
 	virtual ~Player();
 
 	bool Awake();
@@ -27,10 +27,19 @@ public:
 	void OnCollision(PhysBody* physA, PhysBody* physB);
 	void OnCollisionEnd(PhysBody* physA, PhysBody* physB);
 
+private:
+
+	void GetPhysicsValues();
+	void Move();
+	void Jump();
+	void Teleport();
+	void ApplyPhysics();
+	void Draw(float dt);
+
 public:
 
 	//Declare player parameters
-	float speed = 5.0f;
+	float speed = 4.0f;
 	SDL_Texture* texture = NULL;
 
 	int texW, texH;
@@ -43,9 +52,8 @@ public:
 	float jumpForce = 2.5f; // The force to apply when jumping
 	bool isJumping = false; // Flag to check if the player is currently jumping
 
-private: 
+private:
 	b2Vec2 velocity;
-	// L10: TODO 4: Declare an AnimationSet to hold all player animations
 	AnimationSet anims;
 
 };

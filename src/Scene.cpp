@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "Map.h"
 #include "Item.h"
+#include "Enemy.h"
 
 Scene::Scene() : Module()
 {
@@ -33,6 +34,10 @@ bool Scene::Awake()
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->position = Vector2D(200, 672);
+
+	//Create a new enemy 
+	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+	enemy1->position = Vector2D(264, 672);
 
 	return ret;
 }

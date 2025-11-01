@@ -2,7 +2,7 @@
 #include <list>
 #include <queue>
 #include "Vector2D.h"
-#include "SDL2/SDL.h"
+#include <SDL3/SDL.h>
 #include "Map.h"
 
 class Pathfinding
@@ -31,6 +31,6 @@ public:
     Vector2D destination;
 
     //Gid of the tiles that block the path - Important adjust this value to your map
-    int blockedGid = 49; 
+    int blockedGid = 49;
 };
 

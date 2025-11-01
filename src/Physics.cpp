@@ -13,7 +13,7 @@
 Physics::Physics() : Module()
 {
     world = b2_nullWorldId;
-    debug = true; // toggle with F1
+    debug = false; 
 }
 
 // Destructor
@@ -185,7 +185,7 @@ bool Physics::PostUpdate()
     bool ret = true;
 
     // Activate or deactivate debug mode
-    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
+    if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_F9) == KEY_DOWN)
         debug = !debug;
 
     // Debug draw via Box2D 3.x callbacks

@@ -34,12 +34,13 @@ void Pathfinding::ResetPath(Vector2D pos) {
 void Pathfinding::DrawPath() {
 
     Vector2D point;
+	Map* map = Engine::GetInstance().map.get();
 
     // Draw visited
     for (const auto& pathTile : visited) {
-    	Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld(pathTile.getX(), pathTile.getY());
-        SDL_Rect rect = { 32,0,32,32 };
-        Engine::GetInstance().render.get()->DrawTexture(pathTex, pathTileWorld.getX(), pathTileWorld.getY(),&rect);
+    	Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld((int)pathTile.getX(), (int)pathTile.getY());
+        SDL_Rect rect = { 1,1,map->GetTileWidth(),map->GetTileHeight()};
+        Engine::GetInstance().render->DrawTexture(pathTex, (int)pathTileWorld.getX(), (int)pathTileWorld.getY(),&rect);
     }
 
     // Draw frontier
@@ -53,10 +54,11 @@ void Pathfinding::DrawPath() {
         //Get the first element of the queue
         Vector2D frontierTile = frontierCopy.front();
         //Get the position of the frontier tile in the world
-        Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
+        Vector2D pos = Engine::GetInstance().map.get()->MapToWorld((int)frontierTile.getX(), (int)frontierTile.getY());
         //Draw the frontier tile
-        SDL_Rect rect = { 0,0,32,32 };
-        Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
+        SDL_Rect rect = { 1,1,map->GetTileWidth(),map->GetTileHeight() };
+        Engine::GetInstance().render->DrawTexture(pathTex, (int)pos.getX(), (int)pos.getY(), &rect);
+
         //Remove the front element from the queue
         frontierCopy.pop();
     }

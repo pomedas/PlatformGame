@@ -113,7 +113,7 @@ bool Input::PreUpdate()
 		case SDL_EVENT_MOUSE_MOTION:
 		{
 			int scale = Engine::GetInstance().window->GetScale();
-			mouseMotionX = (int) (event.motion.xrel / scale);
+			mouseMotionX = (int)(event.motion.xrel / scale);
 			mouseMotionY = (int)(event.motion.yrel / scale);
 			mouseX = (int)(event.motion.x / scale);
 			mouseY = (int)(event.motion.y / scale);
@@ -138,12 +138,14 @@ bool Input::GetWindowEvent(EventWindow ev)
 	return windowEvents[ev];
 }
 
-Vector2D Input::GetMousePosition()
+void Input::GetMousePosition(int& x, int& y)
 {
-	return Vector2D(mouseX, mouseY);
+	x = mouseX;
+	y = mouseY;
 }
 
-Vector2D Input::GetMouseMotion()
+void Input::GetMouseMotion(int& x, int& y)
 {
-	return Vector2D(mouseMotionX, mouseMotionY);
+	x = mouseMotionX;
+	y = mouseMotionY;
 }

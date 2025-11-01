@@ -77,7 +77,7 @@ std::shared_ptr<Entity> EntityManager::CreateEntity(EntityType type)
 		entity = std::make_shared<Item>();
 		break;
 	case EntityType::ENEMY:
-		entity = new Enemy();
+		entity = std::make_shared<Enemy>();
 		break;
 	default:
 		break;

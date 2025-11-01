@@ -59,8 +59,8 @@ public:
 	bool GetWindowEvent(EventWindow ev);
 
 	// Get mouse / axis position
-	Vector2D GetMousePosition();
-	Vector2D GetMouseMotion();
+	void GetMousePosition(int& x, int& y);
+	void GetMouseMotion(int& x, int& y);
 
 private:
 	bool windowEvents[WE_COUNT];
