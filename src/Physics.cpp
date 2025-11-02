@@ -415,6 +415,23 @@ int PhysBody::RayCast(int x1, int y1, int x2, int y2, float& normal_x, float& no
     return int(floorf(res.fraction * distPixels));
 }
 
+void PhysBody::SetCollisionsActive(bool active)
+{
+    int shapeCount = b2Body_GetShapeCount(body);
+    if (shapeCount > 0)
+    {
+        b2ShapeId shapeId;
+        // pedimos solo 1
+        b2Body_GetShapes(body, &shapeId, 1);
+
+        // aquí ya puedes tocar el filtro
+        b2Filter filter = b2Shape_GetFilter(shapeId);
+        if(active) filter.maskBits = 0xFFFF;              // no colisiona con nada
+        else filter.maskBits = 0x0000;			  // colisiona con todo
+        b2Shape_SetFilter(shapeId, filter);
+    }
+}
+
 // --- helpers
 
 b2BodyType Physics::ToB2Type(bodyType t)

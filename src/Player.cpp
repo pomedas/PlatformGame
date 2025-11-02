@@ -56,6 +56,7 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	CheckCollisionsActive();
 	GetPhysicsValues();
 	Move();
 	Jump();
@@ -64,6 +65,15 @@ bool Player::Update(float dt)
 	Draw(dt);
 
 	return true;
+}
+
+void Player::CheckCollisionsActive()
+{ 
+	if (collisionsActive == false && timerCollsionsActive.ReadMSec() > 800) {
+		//Re-enable collisions after 2 seconds
+		pbody->SetCollisionsActive(true);
+		collisionsActive = true;
+	}
 }
 
 void Player::Teleport() {
@@ -150,11 +160,22 @@ void Player::OnCollision(PhysBody* physA, PhysBody* physB) {
 		//reset the jump flag when touching the ground
 		isJumping = false;
 		anims.SetCurrent("idle");
+
+		b2BodyId bodyId = pbody->body; // tu id
+
+
+
 		break;
 	case ColliderType::ITEM:
 		LOG("Collision ITEM");
 		Engine::GetInstance().audio->PlayFx(pickCoinFxId);
 		physB->listener->Destroy();
+
+		// Disable  collisions when touching the item and start timer to restore them
+		pbody->SetCollisionsActive(false); 
+		collisionsActive = false;
+		timerCollsionsActive.Start();
+
 		break;
 	case ColliderType::UNKNOWN:
 		LOG("Collision UNKNOWN");

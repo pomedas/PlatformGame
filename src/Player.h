@@ -4,6 +4,7 @@
 #include "Animation.h"
 #include <box2d/box2d.h>
 #include <SDL3/SDL.h>
+#include "Timer.h"
 
 struct SDL_Texture;
 
@@ -35,6 +36,7 @@ private:
 	void Teleport();
 	void ApplyPhysics();
 	void Draw(float dt);
+	void CheckCollisionsActive();
 
 public:
 
@@ -55,5 +57,6 @@ public:
 private: 
 	b2Vec2 velocity;
 	AnimationSet anims;
-
+	Timer timerCollsionsActive; 
+	bool collisionsActive = true;
 };

@@ -32,7 +32,7 @@ bool Scene::Awake()
 	
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
-	item->position = Vector2D(200, 672);
+	item->position = Vector2D(264, 500);
 
 	return ret;
 }
