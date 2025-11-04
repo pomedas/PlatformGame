@@ -9,6 +9,7 @@ Pathfinding::Pathfinding() {
     
      //Loads texture to draw the path
     pathTex = Engine::GetInstance().textures.get()->Load("Assets/Maps/MapMetadata.png");
+    tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
     map = Engine::GetInstance().map.get();
     layerNav = map->GetNavigationLayer();
 }
@@ -101,6 +102,8 @@ void Pathfinding::PropagateBFS() {
 
         if (frontierTile == playerPosTile) {
             foundDestination = true;
+
+            // L12: TODO 2: When the destination is reach, call the function ComputePath
         }
     }
 
@@ -112,16 +115,16 @@ void Pathfinding::PropagateBFS() {
         frontier.pop();
 		//Get the neighbors (4 directions)
 		std::list<Vector2D> neighbors;
-        if (IsWalkable(frontierTile.getX() + 1, frontierTile.getY())) {
+        if (IsWalkable((int)frontierTile.getX() + 1, (int)frontierTile.getY())) {
             neighbors.push_back(Vector2D(frontierTile.getX() + 1, frontierTile.getY()));
         }
-        if (IsWalkable(frontierTile.getX(), frontierTile.getY() + 1)) {
+        if (IsWalkable((int)frontierTile.getX(), (int)frontierTile.getY() + 1)) {
             neighbors.push_back(Vector2D(frontierTile.getX(), frontierTile.getY() + 1));
         }
-        if (IsWalkable(frontierTile.getX() - 1, frontierTile.getY())) {
+        if (IsWalkable((int)frontierTile.getX() - 1, (int)frontierTile.getY())) {
             neighbors.push_back(Vector2D(frontierTile.getX() - 1, frontierTile.getY()));
         }
-        if (IsWalkable(frontierTile.getX(), frontierTile.getY() - 1)) {
+        if (IsWalkable((int)frontierTile.getX(), (int)frontierTile.getY() - 1)) {
             neighbors.push_back(Vector2D(frontierTile.getX(), frontierTile.getY() - 1));
         }
 
@@ -140,8 +143,55 @@ void Pathfinding::PropagateBFS() {
             if (!isVisited) {
                 frontier.push(neighbor);
                 visited.push_back(neighbor);
+                //L12 TODO 1: store the position from where the neighbor was reached in the breadcrumbs list
             }
         }
 
     }
+}
+
+void Pathfinding::PropagateDijkstra() {
+
+    // L12: TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
+
+}
+
+int Pathfinding::MovementCost(int x, int y)
+{
+    int ret = -1;
+
+    if ((x >= 0) && (x < map->GetMapSizeInTiles().getX()) && (y >= 0) && (y < map->GetMapSizeInTiles().getY()))
+    {
+        int gid = layerNav->Get(x, y);
+        if (gid == highCostGid) {
+            ret = 5;
+        }
+        else ret = 1;
+    }
+
+    return ret;
+}
+
+void Pathfinding::ComputePath(int x, int y)
+{
+    // L12: TODO 2: Follow the breadcrumps to goal back to the origin
+    // at each step, add the point into "pathTiles" (it will then draw automatically)
+
+}
+
+int Pathfinding::Find(std::vector<Vector2D> vector, Vector2D elem)
+{
+    int index = 0;
+    bool found = false;
+    for (const auto& e : vector) {
+        if (e == elem) {
+            found = true;
+            break;
+        }
+        index++;
+    }
+
+    if (found) return index;
+    else return -1;
+
 }

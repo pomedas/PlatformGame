@@ -92,6 +92,15 @@ void Enemy::PerformPathfinding() {
 		pathfinding->PropagateBFS();
 	}
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_K) == KEY_DOWN) {
+		pathfinding->PropagateDijkstra();
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_K) == KEY_REPEAT &&
+		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
+		pathfinding->PropagateDijkstra();
+	}
+
 }
 
 void Enemy::GetPhysicsValues() {
