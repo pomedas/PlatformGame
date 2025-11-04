@@ -12,6 +12,9 @@ Pathfinding::Pathfinding() {
     tileX = Engine::GetInstance().textures.get()->Load("Assets/Maps/x.png");
     map = Engine::GetInstance().map.get();
     layerNav = map->GetNavigationLayer();
+
+    // Initialize the costSoFar with all elements set to 0
+    costSoFar = std::vector<std::vector<int>>(map->GetMapSizeInTiles().getX(), std::vector<int>(map->GetMapSizeInTiles().getY(), 0));
 }
 
 Pathfinding::~Pathfinding() {
@@ -25,28 +28,40 @@ void Pathfinding::ResetPath(Vector2D pos) {
     while (!frontier.empty()) {
         frontier.pop();
     }
-    //Clear the visited list
-    visited.clear();
+    // Clear the frontierDijkstra queue
+    while (!frontierDijkstra.empty()) {
+        frontierDijkstra.pop();
+    }
 
+    visited.clear(); //Clear the visited list
+    breadcrumbs.clear(); //Clear the breadcrumbs list
+    pathTiles.clear(); //Clear the pathTiles list
+
+    // Inserts the first position in the queue and visited list
     frontier.push(pos);
+    frontierDijkstra.push(std::make_pair(0, pos));
     visited.push_back(pos);
+    breadcrumbs.push_back(pos);
+
+    //reset the costSoFar matrix
+    costSoFar = std::vector<std::vector<int>>(map->GetMapSizeInTiles().getX(), std::vector<int>(map->GetMapSizeInTiles().getY(), 0));
 }
 
 void Pathfinding::DrawPath() {
 
     Vector2D point;
-	Map* map = Engine::GetInstance().map.get();
+    Map* map = Engine::GetInstance().map.get();
 
     // Draw visited
     for (const auto& pathTile : visited) {
-    	Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld((int)pathTile.getX(), (int)pathTile.getY());
-		// we use the second tile in the tileset to draw the visited. That's why we use rect x=33
-        SDL_Rect rect = { 33,1,map->GetTileWidth(),map->GetTileHeight()};
-        Engine::GetInstance().render->DrawTexture(pathTex, (int)pathTileWorld.getX(), (int)pathTileWorld.getY(),&rect);
+        Vector2D pathTileWorld = Engine::GetInstance().map.get()->MapToWorld((int)pathTile.getX(), (int)pathTile.getY());
+        // we use the second tile in the tileset to draw the visited. That's why we use rect x=33
+        SDL_Rect rect = { 33,1,map->GetTileWidth(),map->GetTileHeight() };
+        Engine::GetInstance().render->DrawTexture(pathTex, (int)pathTileWorld.getX(), (int)pathTileWorld.getY(), &rect);
     }
 
     // Draw frontier
-    
+
     // Create a copy of the queue to iterate over
     std::queue<Vector2D> frontierCopy = frontier;
 
@@ -57,12 +72,38 @@ void Pathfinding::DrawPath() {
         Vector2D frontierTile = frontierCopy.front();
         //Get the position of the frontier tile in the world
         Vector2D pos = Engine::GetInstance().map.get()->MapToWorld((int)frontierTile.getX(), (int)frontierTile.getY());
-		//Draw the frontier tile. We use the first tile in the tileset to draw the frontier. That's why we use rect x=1
+        //Draw the frontier tile. We use the first tile in the tileset to draw the frontier. That's why we use rect x=1
         SDL_Rect rect = { 1,1,map->GetTileWidth(),map->GetTileHeight() };
         Engine::GetInstance().render->DrawTexture(pathTex, (int)pos.getX(), (int)pos.getY(), &rect);
 
         //Remove the front element from the queue
         frontierCopy.pop();
+    }
+
+    // Draw frontierDijsktra
+
+    // Create a copy of the queue to iterate over
+    std::priority_queue<std::pair<int, Vector2D>, std::vector<std::pair<int, Vector2D>>, std::greater<std::pair<int, Vector2D>> > frontierDijkstraCopy = frontierDijkstra;
+
+    // Iterate over the elements of the frontier copy
+    while (!frontierDijkstraCopy.empty()) {
+
+        //Get the first element of the queue
+        Vector2D frontierTile = frontierDijkstraCopy.top().second;
+        //Get the position of the frontier tile in the world
+        Vector2D pos = Engine::GetInstance().map.get()->MapToWorld(frontierTile.getX(), frontierTile.getY());
+        //Draw the frontier tile
+        SDL_Rect rect = { 0,0,32,32 };
+        Engine::GetInstance().render.get()->DrawTexture(pathTex, pos.getX(), pos.getY(), &rect);
+        //Remove the front element from the queue
+        frontierDijkstraCopy.pop();
+    }
+
+
+    // Draw path
+    for (const auto& pathTile : pathTiles) {
+        Vector2D pathTileWorld = map->MapToWorld(pathTile.getX(), pathTile.getY());
+        Engine::GetInstance().render.get()->DrawTexture(tileX, pathTileWorld.getX(), pathTileWorld.getY());
     }
 
 }
@@ -179,7 +220,7 @@ void Pathfinding::ComputePath(int x, int y)
 
 }
 
-int Pathfinding::Find(std::vector<Vector2D> vector, Vector2D elem)
+int Pathfinding::Find(std::list<Vector2D> vector, Vector2D elem)
 {
     int index = 0;
     bool found = false;

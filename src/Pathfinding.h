@@ -26,7 +26,7 @@ public:
     void PropagateDijkstra();
 
 private:
-    int Find(std::vector<Vector2D> vector, Vector2D elem);
+    int Find(std::list<Vector2D> vector, Vector2D elem);
 
 public:
 
