@@ -50,6 +50,9 @@ bool Scene::Start()
 
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
+
+	// Texture to highligh mouse position 
+	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	
 	return true;
 }
@@ -77,6 +80,27 @@ bool Scene::Update(float dt)
 	
 	if(Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 		Engine::GetInstance().render.get()->camera.x += (int)ceil(camSpeed * dt);
+
+	//Get mouse position and obtain the map coordinate
+	Vector2D mousePos = Engine::GetInstance().input->GetMousePosition();
+	Vector2D mouseTile = Engine::GetInstance().map->WorldToMap((int)(mousePos.getX() - Engine::GetInstance().render->camera.x),
+															   (int)(mousePos.getY() - Engine::GetInstance().render->camera.y));
+
+	//Render a texture where the mouse is over to highlight the tile, use the texture 'mouseTileTex'
+	Vector2D highlightTile = Engine::GetInstance().map.get()->MapToWorld((int)mouseTile.getX(), (int)mouseTile.getY());
+	SDL_Rect rect = { 0,0,Engine::GetInstance().map->GetTileWidth(),Engine::GetInstance().map->GetTileHeight() };
+	Engine::GetInstance().render.get()->DrawTexture(mouseTileTex,(int)highlightTile.getX(),(int)highlightTile.getY(),&rect);
+
+	// saves the tile pos for debugging purposes
+	if (mouseTile.getX() >= 0 && mouseTile.getY() >= 0 || once) {
+		tilePosDebug = "[" + std::to_string((int)mouseTile.getX()) + "," + std::to_string((int)mouseTile.getY()) + "] ";
+		once = true;
+	}
+
+	//If mouse button is pressed modify player position
+	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
+		player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
+	}
 
 	return true;
 }

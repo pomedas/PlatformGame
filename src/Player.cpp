@@ -124,10 +124,10 @@ void Player::Draw(float dt) {
 
 	//L10: TODO 7: Center the camera on the player
 	Vector2D mapSize = Engine::GetInstance().map->GetMapSizeInPixels();
-	float limitLeft = Engine::GetInstance().render->camera.w / 4;
-	float limitRight = mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
+	float limitLeft = (float)Engine::GetInstance().render->camera.w / 4;
+	float limitRight = (float)mapSize.getX() - Engine::GetInstance().render->camera.w * 3 / 4;
 	if (position.getX() - limitLeft > 0 && position.getX() < limitRight) {
-		Engine::GetInstance().render->camera.x = -position.getX() + Engine::GetInstance().render->camera.w / 4;
+		Engine::GetInstance().render->camera.x = (int) - position.getX() + (int)(Engine::GetInstance().render->camera.w / 4);
 	}
 
 	// L10: TODO 5: Draw the player using the texture and the current animation frame
@@ -187,4 +187,8 @@ Vector2D Player::GetPosition() {
 	pbody->GetPosition(x, y);
 	// Adjust for center
 	return Vector2D((float)x - texW / 2, (float)y - texH / 2);
+}
+
+void Player::SetPosition(Vector2D pos) {
+	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
 }
