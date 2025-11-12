@@ -101,7 +101,7 @@ void Enemy::PerformPathfinding() {
 		pathfinding->PropagateDijkstra();
 	}
 
-	// L13: A* Propagation with L key
+	// L13: TODO 3:	Add the key inputs to propagate the A* algorithm with different heuristics (Manhattan, Euclidean, Squared)
 
 }
 
