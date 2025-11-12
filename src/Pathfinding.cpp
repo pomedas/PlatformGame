@@ -274,6 +274,7 @@ void Pathfinding::PropagateDijkstra() {
 }
 
 void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
+    // L13: TODO 2: Taking Dijkstra as a reference, implement the A* algorithm
 }
 
 int Pathfinding::MovementCost(int x, int y)

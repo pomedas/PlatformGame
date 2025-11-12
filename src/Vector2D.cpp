@@ -66,5 +66,6 @@ bool Vector2D::operator<(const Vector2D& other) const {
         return x < other.x;
     }
     return y < other.y;
-// L13 TODO 1: Implement Distance between two vectors (Manahttan, Euclidean, Squared)
 }
+
+// L13 TODO 1: Implement Distance between two vectors (Manahttan, Euclidean, Squared)
