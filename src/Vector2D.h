@@ -25,6 +25,7 @@ public:
     bool operator!=(const Vector2D& other) const;
     bool operator<(const Vector2D& other) const;
 
+    // L13 TODO 1: Implement Distance between two vectors (Manahttan, Euclidean, Squared)
     // Output stream operator
     friend std::ostream& operator<<(std::ostream& os, const Vector2D& vec);
 
