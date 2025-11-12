@@ -248,6 +248,9 @@ void Pathfinding::PropagateDijkstra() {
 
 }
 
+void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
+}
+
 int Pathfinding::MovementCost(int x, int y)
 {
     int ret = -1;
