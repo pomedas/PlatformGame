@@ -103,6 +103,33 @@ void Enemy::PerformPathfinding() {
 
 	// L13: TODO 3:	Add the key inputs to propagate the A* algorithm with different heuristics (Manhattan, Euclidean, Squared)
 
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_B) == KEY_DOWN) {
+		pathfinding->PropagateAStar(MANHATTAN);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_B) == KEY_REPEAT &&
+		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
+		pathfinding->PropagateAStar(MANHATTAN);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_N) == KEY_DOWN) {
+		pathfinding->PropagateAStar(EUCLIDEAN);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_N) == KEY_REPEAT &&
+		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
+		pathfinding->PropagateAStar(EUCLIDEAN);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_M) == KEY_DOWN) {
+		pathfinding->PropagateAStar(SQUARED);
+	}
+
+	if (Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_M) == KEY_REPEAT &&
+		Engine::GetInstance().input.get()->GetKey(SDL_SCANCODE_LSHIFT) == KEY_REPEAT) {
+		pathfinding->PropagateAStar(SQUARED);
+	}
+
 }
 
 void Enemy::GetPhysicsValues() {
