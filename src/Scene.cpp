@@ -28,9 +28,6 @@ bool Scene::Awake()
 	LOG("Loading Scene");
 	bool ret = true;
 
-	//L04: TODO 3b: Instantiate the player using the entity manager
-	player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
-	
 	//L08: TODO 4: Create a new item using the entity manager and set the position to (200, 672) to test
 	std::shared_ptr<Item> item = std::dynamic_pointer_cast<Item>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ITEM));
 	item->position = Vector2D(200, 672);
@@ -45,13 +42,13 @@ bool Scene::Awake()
 // Called before the first frame
 bool Scene::Start()
 {
-
 	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
 	//L15 TODO 3: Call the function to load entities from the map
+	Engine::GetInstance().map->LoadEntities(player);
 
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
@@ -113,8 +110,14 @@ bool Scene::PostUpdate()
 	bool ret = true;
 
 	//L15 TODO 3: Call the function to load entities from the map
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F5) == KEY_DOWN) {
+		Engine::GetInstance().map->LoadEntities(player);
+	}
 
-	//L15 TODO 5: Call the function to save entities from the map
+	//L15 TODO 4: Call the function to save entities from the map
+	if (Engine::GetInstance().input->GetKey(SDL_SCANCODE_F6) == KEY_DOWN) {
+		Engine::GetInstance().map->SaveEntities(player);
+	}
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;

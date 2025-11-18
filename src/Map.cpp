@@ -5,6 +5,7 @@
 #include "Map.h"
 #include "Log.h"
 #include "Physics.h"
+#include "EntityManager.h"
 
 #include <math.h>
 
@@ -117,7 +118,6 @@ bool Map::Load(std::string path, std::string fileName)
     std::string mapPathName = mapPath + mapFileName;
 
     //L15 TODO 2: make mapFileXML an attribute of the Map class
-    pugi::xml_document mapFileXML;
     pugi::xml_parse_result result = mapFileXML.load_file(mapPathName.c_str());
 
     if(result == NULL)
@@ -229,7 +229,6 @@ bool Map::Load(std::string path, std::string fileName)
         }
 
         //L15 TODO 2: Remove mapFileXML.reset(); we want keep a reference to the XML
-        if (mapFileXML) mapFileXML.reset();
 
     }
 
@@ -301,7 +300,67 @@ MapLayer* Map::GetNavigationLayer() {
 }
 
 //L15 TODO 2: Define a method to load entities from the map XML
+ void Map::LoadEntities(std::shared_ptr<Player>& player) {
+    
+	 //Iterate the object groups
+     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
+		 //Check if the object group is "Entities"
+        if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
+            
+			//Iterate the objects
+            for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) {
 
-//L15 TODO 4: Define a method to save entities to the map XML
+				//Get the entity type and position
+                std::string entityType = objectNode.attribute("type").as_string();
+                float x = objectNode.attribute("x").as_float();
+                float y = objectNode.attribute("y").as_float();
+                
+                // Create entity based on type
+                if (entityType == "Player") {
+                    // Create Player entity
+                    if (player == nullptr) {
+                        player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
+                        player->position = Vector2D(x, y);
+                    }
+					//If the player already exists, just set its position
+                    else {
+                        player->SetPosition(Vector2D(x, y));
+                    }
+                }
+            }
+        }
+    }
+}
+
+ //L15 TODO 4: Define a method to save entities to the map XML
+ void Map::SaveEntities(std::shared_ptr<Player> player) {
+     
+	 //Iterate the object groups
+     for (pugi::xml_node objectGroupNode = mapFileXML.child("map").child("objectgroup"); objectGroupNode != NULL; objectGroupNode = objectGroupNode.next_sibling("objectgroup")) {
+
+		 //Check if the object group is "Entities"
+         if (objectGroupNode.attribute("name").as_string() == std::string("Entities")) {
+
+			 //Iterate the objects
+             for (pugi::xml_node objectNode = objectGroupNode.child("object"); objectNode != NULL; objectNode = objectNode.next_sibling("object")) {
+                 std::string entityType = objectNode.attribute("type").as_string();
+                 // Modify entity based on type
+                 if (entityType == "Player") {
+                     // Modify the Player entity values
+                     Vector2D playerPos = player->GetPosition();
+                     objectNode.attribute("x").set_value(playerPos.getX());
+                     objectNode.attribute("y").set_value(playerPos.getY());
+                 }
+             }
+         }
+     }
+
+     //Important: save the modifications to the XML 
+     std::string mapPathName = mapPath + mapFileName;
+     mapFileXML.save_file(mapPathName.c_str());
+ 
+ }
+
+
 
 

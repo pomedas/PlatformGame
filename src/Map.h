@@ -3,6 +3,7 @@
 #include "Module.h"
 #include <list>
 #include <vector>
+#include "Player.h"
 
 // L09: TODO 5: Add attributes to the property structure
 struct Properties
@@ -148,8 +149,9 @@ public:
     }
 
     //L15 TODO 2: Define a method to load entities from the map XML
-
-    //L15 TODO 4: Define a method to save entities to the map XML
+    void LoadEntities(std::shared_ptr<Player>& player);
+	//L15 TODO 4: Define a method to save entities to the map XML
+    void SaveEntities(std::shared_ptr<Player> player);
 
 public: 
     std::string mapFileName;
@@ -159,5 +161,6 @@ private:
     bool mapLoaded;
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
-    //L15 TODO 2: make mapFileXML an attribute of the Map class
+	//L15 TODO 2: make the mapFileXML an attribute of the Map class
+    pugi::xml_document mapFileXML;
 };
