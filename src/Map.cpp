@@ -234,12 +234,12 @@ bool Map::Load(std::string path, std::string fileName)
 }
 
 // L07: TODO 8: Create a method that translates x,y coordinates from map positions to world positions
-Vector2D Map::MapToWorld(int i, int j) const
+Vector2D Map::MapToWorld(int x, int y) const
 {
     Vector2D ret;
 
-    ret.setX((float)(i * mapData.tileWidth));
-    ret.setY((float)(j * mapData.tileHeight));
+    ret.setX((float)(x * mapData.tileWidth));
+    ret.setY((float)(y * mapData.tileHeight));
 
     return ret;
 }
