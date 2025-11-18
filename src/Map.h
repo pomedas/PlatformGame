@@ -147,6 +147,10 @@ public:
         return mapData.tileHeight;
     }
 
+    //L15 TODO 2: Define a method to load entities from the map XML
+
+    //L15 TODO 4: Define a method to save entities to the map XML
+
 public: 
     std::string mapFileName;
     std::string mapPath;
@@ -155,4 +159,5 @@ private:
     bool mapLoaded;
     // L06: DONE 1: Declare a variable data of the struct MapData
     MapData mapData;
+    //L15 TODO 2: make mapFileXML an attribute of the Map class
 };

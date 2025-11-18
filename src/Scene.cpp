@@ -51,6 +51,8 @@ bool Scene::Start()
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
 
+	//L15 TODO 3: Call the function to load entities from the map
+
 	// Texture to highligh mouse position 
 	mouseTileTex = Engine::GetInstance().textures->Load("Assets/Maps/MapMetadata.png");
 	
@@ -109,6 +111,10 @@ bool Scene::Update(float dt)
 bool Scene::PostUpdate()
 {
 	bool ret = true;
+
+	//L15 TODO 3: Call the function to load entities from the map
+
+	//L15 TODO 5: Call the function to save entities from the map
 
 	if(Engine::GetInstance().input->GetKey(SDL_SCANCODE_ESCAPE) == KEY_DOWN)
 		ret = false;

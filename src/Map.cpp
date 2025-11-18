@@ -116,6 +116,7 @@ bool Map::Load(std::string path, std::string fileName)
     mapPath = path;
     std::string mapPathName = mapPath + mapFileName;
 
+    //L15 TODO 2: make mapFileXML an attribute of the Map class
     pugi::xml_document mapFileXML;
     pugi::xml_parse_result result = mapFileXML.load_file(mapPathName.c_str());
 
@@ -227,6 +228,7 @@ bool Map::Load(std::string path, std::string fileName)
             LOG("Error while parsing map file: %s", mapPathName.c_str());
         }
 
+        //L15 TODO 2: Remove mapFileXML.reset(); we want keep a reference to the XML
         if (mapFileXML) mapFileXML.reset();
 
     }
@@ -298,6 +300,8 @@ MapLayer* Map::GetNavigationLayer() {
     return nullptr;
 }
 
+//L15 TODO 2: Define a method to load entities from the map XML
 
+//L15 TODO 4: Define a method to save entities to the map XML
 
 
