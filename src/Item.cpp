@@ -64,6 +64,6 @@ bool Item::Destroy()
 {
 	LOG("Destroying item");
 	active = false;
-	Engine::GetInstance().entityManager->DestroyEntity(shared_from_this());
+	pendingToDelete = true;
 	return true;
 }
