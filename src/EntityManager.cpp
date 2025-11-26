@@ -84,10 +84,28 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 bool EntityManager::Update(float dt)
 {
 	bool ret = true;
-	for(const auto entity : entities)
+
+	//List to store entities pending deletion
+	std::list<std::shared_ptr<Entity>> pendingDelete;
+
+	//Iterates over the entities and calls Update
+	for (const auto entity : entities)
 	{
+		//If the entity is marked for deletion, add it to the pendingDelete list
+		if (entity->pendingToDelete)
+		{
+			pendingDelete.push_back(entity);
+		}
+		//If the entity is not active, skip it
 		if (entity->active == false) continue;
 		ret = entity->Update(dt);
 	}
+
+	//Now iterates over the pendingDelete list and destroys the entities
+	for (const auto entity : pendingDelete)
+	{
+		DestroyEntity(entity);
+	}
+
 	return ret;
 }
