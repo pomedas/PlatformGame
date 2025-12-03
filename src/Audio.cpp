@@ -73,6 +73,9 @@ bool Audio::EnsureStreams() {
         }
     }
 
+	// Set music volume
+    SDL_SetAudioStreamGain(music_stream_, music_volume_);
+
     if (!sfx_stream_) {
         sfx_stream_ = SDL_CreateAudioStream(nullptr, &device_spec_);
         if (!sfx_stream_) {
@@ -86,6 +89,9 @@ bool Audio::EnsureStreams() {
             return false;
         }
     }
+
+	// Set SFX volume
+    SDL_SetAudioStreamGain(sfx_stream_, sfx_volume_);
 
     return true;
 }
@@ -216,4 +222,30 @@ bool Audio::PlayFx(int id, int repeat) {
     }
 
     return true;
+}
+
+void Audio::SetMusicVolume(float volume)
+{
+    // clamp
+    if (volume < 0.0f) volume = 0.0f;
+    else if (volume > 1.0f) volume = 1.0f;
+
+    music_volume_ = volume;
+
+    if (music_stream_) {
+        SDL_SetAudioStreamGain(music_stream_, music_volume_);
+    }
+}
+
+void Audio::SetSFXVolume(float volume)
+{
+    // clamp
+    if (volume < 0.0f) volume = 0.0f;
+    else if (volume > 1.0f) volume = 1.0f;
+
+    sfx_volume_ = volume;
+
+    if (sfx_stream_) {
+        SDL_SetAudioStreamGain(sfx_stream_, sfx_volume_);
+    }
 }

@@ -33,6 +33,10 @@ public:
 	// Play a previously loaded WAV
 	bool PlayFx(int fx, int repeat = 0);
 
+	// Volume control
+    void SetMusicVolume(float volume); // 0.0f – 1.0f
+    void SetSFXVolume(float volume);   // 0.0f – 1.0f
+
 private:
 
     struct SoundData {
@@ -52,6 +56,10 @@ private:
     // Loaded sounds
     SoundData music_data_{};
     std::vector<SoundData> sfx_; // 1-based indexing outwardly
+
+	// Volume control
+    float music_volume_ = 1.0f; // 0.0 = mute, 1.0 = full
+    float sfx_volume_ = 1.0f;
 
     // helpers
     bool LoadWavFile(const char* path, SoundData& out);
