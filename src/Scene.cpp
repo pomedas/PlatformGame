@@ -147,6 +147,7 @@ Vector2D Scene::GetPlayerPosition()
 bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 {
 	// L16: TODO 5: Implement the OnGuiMouseClickEvent method
+	LOG("Press Gui Control: %d", uiElement->id);
 
 	return true;
 }
