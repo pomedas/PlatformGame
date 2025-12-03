@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Module.h"
 #include <SDL3/SDL.h>
@@ -13,27 +13,29 @@ class Audio : public Module
 {
 public:
 
-	Audio();
+    Audio();
 
-	// Destructor
-	virtual ~Audio();
+    // Destructor
+    virtual ~Audio();
 
-	// Called before render is available
-	bool Awake();
+    // Called before render is available
+    bool Awake();
 
-	// Called before quitting
-	bool CleanUp();
+    // Called before quitting
+    bool CleanUp();
 
-	// Play a music file
-	bool PlayMusic(const char* path, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
+    // Play a music file
+    bool PlayMusic(const char* path, float fadeTime = DEFAULT_MUSIC_FADE_TIME);
 
-	// Load a WAV in memory
-	int LoadFx(const char* path);
+    // Load a WAV in memory
+    int LoadFx(const char* path);
 
-	// Play a previously loaded WAV
-	bool PlayFx(int fx, int repeat = 0);
+    // Play a previously loaded WAV
+    bool PlayFx(int fx, int repeat = 0);
 
-    bool Update(float dt) override;  
+    // Volume control
+    void SetMusicVolume(float volume); // 0.0f � 1.0f
+    void SetSFXVolume(float volume);   // 0.0f � 1.0f
 
 private:
 
@@ -43,23 +45,21 @@ private:
         Uint32 len{ 0 };  // bytes
     };
 
-	// Currently playing sound effect
-    struct PlayingSfx {
-        SDL_AudioStream* stream{ nullptr };
-        float timeLeft{ 0.0f };   // segundos restantes
-    };
-
     // Device and default output format
     SDL_AudioDeviceID device_{ 0 };
     SDL_AudioSpec     device_spec_{};
 
     // Streams
     SDL_AudioStream* music_stream_{ nullptr }; // for background music (single)
+    SDL_AudioStream* sfx_stream_{ nullptr };   // simple shared SFX stream
 
     // Loaded sounds
     SoundData music_data_{};
     std::vector<SoundData> sfx_; // 1-based indexing outwardly
-    std::vector<SDL_AudioStream*> active_sfx_streams_;
+
+    // Volume control
+    float music_volume_ = 1.0f; // 0.0 = mute, 1.0 = full
+    float sfx_volume_ = 1.0f;
 
     // helpers
     bool LoadWavFile(const char* path, SoundData& out);
