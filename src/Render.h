@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Vector2D.h"
 #include "SDL3/SDL.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 class Render : public Module
 {
@@ -35,6 +36,8 @@ public:
 	bool DrawRectangle(const SDL_Rect& rect, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool filled = true, bool useCamera = true) const;
 	bool DrawLine(int x1, int y1, int x2, int y2, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
 	bool DrawCircle(int x1, int y1, int redius, Uint8 r, Uint8 g, Uint8 b, Uint8 a = 255, bool useCamera = true) const;
+	// L16: method DrawText to render text on screen. Uses SDL3_ttf
+	bool DrawText(const char* text, int x, int y, int w, int h, SDL_Color color) const;
 
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
@@ -48,4 +51,5 @@ public:
 
 private:
 	bool vsync = false;
+	TTF_Font* font;
 };

@@ -13,6 +13,7 @@
 #include "Map.h"
 #include "Physics.h"
 #include "Log.h"
+#include "UIManager.h"
 
 // Constructor
 Engine::Engine() {
@@ -39,6 +40,7 @@ Engine::Engine() {
     scene = std::make_shared<Scene>();
     map = std::make_shared<Map>();
     entityManager = std::make_shared<EntityManager>();
+	uiManager = std::make_shared<UIManager>(); 
 
     // Ordered for awake / Start / Update
     // Reverse order of CleanUp
@@ -51,6 +53,8 @@ Engine::Engine() {
     AddModule(std::static_pointer_cast<Module>(map));
     AddModule(std::static_pointer_cast<Module>(scene));
     AddModule(std::static_pointer_cast<Module>(entityManager));
+	// UI Manager on top of the other modules
+	AddModule(std::static_pointer_cast<Module>(uiManager)); 
 
     // Render last 
     AddModule(std::static_pointer_cast<Module>(render));

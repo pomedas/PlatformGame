@@ -1,14 +1,18 @@
 {
   "builtin-baseline": "7213cf8135c329c37c7e2778e40774489a0583a8",
   "dependencies": [
+    "box2d",
+    "libjpeg-turbo",
     "libpng",
+    "pugixml",
     "sdl3",
     {
-        "name": "sdl3-image",
-        "features": [ "png", "jpeg" ]
+      "name": "sdl3-image",
+      "features": [
+        "jpeg",
+        "png"
+      ]
     },
-    "libjpeg-turbo",
-	"pugixml",
-	"box2d"
+    "sdl3-ttf"
   ]
 }

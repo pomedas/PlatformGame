@@ -12,6 +12,7 @@
 #include "Map.h"
 #include "Item.h"
 #include "Enemy.h"
+#include "UIManager.h"
 
 Scene::Scene() : Module()
 {
@@ -36,13 +37,15 @@ bool Scene::Awake()
 	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 	enemy1->position = Vector2D(384, 672);
 
+	// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+
 	return ret;
 }
 
 // Called before the first frame
 bool Scene::Start()
 {
-	//Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
+	Engine::GetInstance().audio->PlayMusic("Assets/Audio/Music/level-iv-339695.wav");
 
 	//L06 TODO 3: Call the function to load the map. 
 	Engine::GetInstance().map->Load("Assets/Maps/", "MapTemplate.tmx");
@@ -96,10 +99,10 @@ bool Scene::Update(float dt)
 		once = true;
 	}
 
-	//If mouse button is pressed modify player position
-	if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
-		player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
-	}
+	////If mouse button is pressed modify player position
+	//if (Engine::GetInstance().input.get()->GetMouseButtonDown(1) == KEY_DOWN) {
+	//	player->SetPosition(Vector2D(highlightTile.getX(), highlightTile.getY()));
+	//}
 
 	return true;
 }
@@ -137,4 +140,11 @@ bool Scene::CleanUp()
 Vector2D Scene::GetPlayerPosition()
 {
 	return player->GetPosition();
+}
+
+bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
+{
+	// L16: TODO 5: Implement the OnGuiMouseClickEvent method
+
+	return true;
 }

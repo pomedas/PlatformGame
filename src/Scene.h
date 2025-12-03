@@ -2,6 +2,7 @@
 
 #include "Module.h"
 #include "Player.h"
+#include "UIButton.h"
 
 struct SDL_Texture;
 
@@ -40,6 +41,9 @@ public:
 		return tilePosDebug;
 	}
 
+	// Handles multiple Gui Event methods
+	bool OnUIMouseClickEvent(UIElement* uiElement);
+
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -47,4 +51,8 @@ private:
 	SDL_Texture* mouseTileTex = nullptr;
 	std::string tilePosDebug = "[0,0]";
 	bool once = false;
+
+	// L16: TODO 2: Declare a UIButton 
+
+	float volume = 1.0;
 };

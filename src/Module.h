@@ -3,6 +3,8 @@
 #include <string>
 #include "pugixml.hpp"
 
+class UIElement;
+
 class Module
 {
 public:
@@ -58,7 +60,11 @@ public:
 		return true;
 	}
 
-	//L05 TODO 4a: Declare a function to read the XML parameters
+	//L16 TODO 2: Declare a virtual function to receive GUI events
+	virtual bool OnUIMouseClickEvent(UIElement* uiElement)
+	{
+		return true;
+	}
 
 public:
 

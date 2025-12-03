@@ -163,6 +163,8 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Textures.cpp" />
     <ClCompile Include="src\Timer.cpp" />
+    <ClCompile Include="src\UIButton.cpp" />
+    <ClCompile Include="src\UIManager.cpp" />
     <ClCompile Include="src\Vector2D.cpp" />
     <ClCompile Include="src\Window.cpp" />
   </ItemGroup>
@@ -186,6 +188,9 @@
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Textures.h" />
     <ClInclude Include="src\Timer.h" />
+    <ClInclude Include="src\UIButton.h" />
+    <ClInclude Include="src\UIElement.h" />
+    <ClInclude Include="src\UIManager.h" />
     <ClInclude Include="src\Vector2D.h" />
     <ClInclude Include="src\Window.h" />
   </ItemGroup>
