@@ -21,6 +21,19 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 	std::shared_ptr<UIElement> uiElement = std::make_shared<UIElement>();
 
 	// L16: TODO 1: Implement CreateUIElement function that instantiates a new UIElement according to the UIElementType and add it to the list of UIElements
+	//Call the constructor according to the UIElementType
+	switch (type)
+	{
+	case UIElementType::BUTTON:
+		uiElement = std::make_shared<UIButton>(id, bounds, text);
+		break;
+	}
+
+	//Set the observer
+	uiElement->observer = observer;
+
+	// Created GuiControls are add it to the list of controls
+	UIElementsList.push_back(uiElement);
 
 	return uiElement;
 }

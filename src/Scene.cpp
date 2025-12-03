@@ -38,6 +38,8 @@ bool Scene::Awake()
 	enemy1->position = Vector2D(384, 672);
 
 	// L16: TODO 2: Instantiate a new GuiControlButton in the Scene
+	SDL_Rect btPos = { 520, 350, 120,20 };
+	uiBt = std::dynamic_pointer_cast<UIButton>(Engine::GetInstance().uiManager->CreateUIElement(UIElementType::BUTTON, 1, "MyButton", btPos, this));
 
 	return ret;
 }
