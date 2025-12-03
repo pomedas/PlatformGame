@@ -34,8 +34,8 @@ public:
     bool PlayFx(int fx, int repeat = 0);
 
     // Volume control
-    void SetMusicVolume(float volume); // 0.0f � 1.0f
-    void SetSFXVolume(float volume);   // 0.0f � 1.0f
+    void SetMusicVolume(float volume); // 0.0f - 1.0f
+    void SetSFXVolume(float volume);   // 0.0f - 1.0f
 
 private:
 
