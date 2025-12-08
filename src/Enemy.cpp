@@ -171,6 +171,15 @@ bool Enemy::CleanUp()
 {
 	LOG("Cleanup enemy");
 	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
+	return true;
+}
+
+bool Enemy::Destroy()
+{
+	LOG("Destroying Enemy");
+	active = false;
+	pendingToDelete = true;
 	return true;
 }
 

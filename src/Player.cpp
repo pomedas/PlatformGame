@@ -135,6 +135,7 @@ bool Player::CleanUp()
 {
 	LOG("Cleanup player");
 	Engine::GetInstance().textures->UnLoad(texture);
+	Engine::GetInstance().physics->DeletePhysBody(pbody);
 	return true;
 }
 
@@ -188,4 +189,12 @@ Vector2D Player::GetPosition() {
 
 void Player::SetPosition(Vector2D pos) {
 	pbody->SetPosition((int)(pos.getX() + texW / 2), (int)(pos.getY() + texH / 2));
+}
+
+bool Player::Destroy()
+{
+	LOG("Destroying Player");
+	active = false;
+	pendingToDelete = true;
+	return true;
 }
