@@ -74,8 +74,6 @@ bool Physics::PreUpdate()
         if (!b2Shape_IsValid(e.shapeIdA) || !b2Shape_IsValid(e.shapeIdB)) continue;
         EndContact(e.shapeIdA, e.shapeIdB);
     }
-
-
     return ret;
 }
 
@@ -280,7 +278,7 @@ void Physics::EndContact(b2ShapeId shapeA, b2ShapeId shapeB)
 void Physics::DeletePhysBody(PhysBody* physBody)
 {
 	if (B2_IS_NULL(world)) return; // world already destroyed
-    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener->active)
+    if (physBody && !B2_IS_NULL(physBody->body) && physBody->listener && physBody->listener->active)
     {
         // Don’t change contact/sensor flags here (can mismatch event buffers).
         // Just clear user data so late events won’t dereference a dangling PhysBody*.
