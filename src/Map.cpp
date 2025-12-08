@@ -104,6 +104,12 @@ bool Map::CleanUp()
     }
     mapData.layers.clear();
 
+	// Clean up collider list
+    for (const auto& collider : colliderList) {
+		Engine::GetInstance().physics->DeletePhysBody(collider);
+    }
+	colliderList.clear();
+
     return true;
 }
 
@@ -194,6 +200,7 @@ bool Map::Load(std::string path, std::string fileName)
                             Vector2D mapCoord = MapToWorld(i, j);
                             PhysBody* c1 = Engine::GetInstance().physics.get()->CreateRectangle((int)(mapCoord.getX()+ mapData.tileWidth/2), (int)(mapCoord.getY()+ mapData.tileHeight/2), mapData.tileWidth, mapData.tileHeight, STATIC);
                             c1->ctype = ColliderType::PLATFORM;
+							colliderList.push_back(c1);
                         }
                     }
                 }
@@ -321,6 +328,7 @@ MapLayer* Map::GetNavigationLayer() {
                     if (player == nullptr) {
                         player = std::dynamic_pointer_cast<Player>(Engine::GetInstance().entityManager->CreateEntity(EntityType::PLAYER));
                         player->position = Vector2D(x, y);
+                        player->Start(); //L17: Importan to call Start to initialize teh Entity
                     }
 					//If the player already exists, just set its position
                     else {
