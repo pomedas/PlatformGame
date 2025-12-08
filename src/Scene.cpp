@@ -151,3 +151,27 @@ bool Scene::OnUIMouseClickEvent(UIElement* uiElement)
 
 	return true;
 }
+
+// *********************************************
+// Scene change functions
+// *********************************************
+
+// L17 TODO 2: Define functions to handle scene changes
+
+// *********************************************
+// MAIN MENU functions
+// *********************************************
+
+// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
+
+// *********************************************
+// Level 1 functions
+// *********************************************
+
+// L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
+
+// *********************************************
+// Level 2 functions
+// *********************************************
+
+// L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update

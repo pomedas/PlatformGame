@@ -6,6 +6,8 @@
 
 struct SDL_Texture;
 
+//L17 TODO 1: Define SceneID enum class with INTRO_SCREEN, MAIN_MENU, LEVEL1, LEVEL2
+
 class Scene : public Module
 {
 public:
@@ -44,6 +46,16 @@ public:
 	// Handles multiple Gui Event methods
 	bool OnUIMouseClickEvent(UIElement* uiElement);
 
+	// L17 TODO 2: Define functions to handle scene changes
+
+private:
+
+	// L17 TODO 3: Define specific function for main menu scene: Load, Unload, Handle UI events
+
+	// L17 TODO 4: Define specific functions for level1 scene: Load, Unload, Update, PostUpdate
+
+	// L17 TODO 5: Define specific functions for level2 scene: Load, Unload, Update
+
 private:
 
 	//L03: TODO 3b: Declare a Player attribute
@@ -56,4 +68,7 @@ private:
 	std::shared_ptr<UIButton> uiBt;
 
 	float volume = 1.0;
+
+	// L17 TODO 1: Current scene attribute with initial value
+
 };
