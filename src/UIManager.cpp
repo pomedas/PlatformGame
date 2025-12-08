@@ -40,9 +40,26 @@ std::shared_ptr<UIElement> UIManager::CreateUIElement(UIElementType type, int id
 
 bool UIManager::Update(float dt)
 {	
-	for (const auto& control : UIElementsList)
+	//List to store entities pending deletion
+	std::list<std::shared_ptr<UIElement>> pendingDelete;
+
+	for (const auto& uiElement : UIElementsList)
 	{
-		control->Update(dt);
+		//If the entity is marked for deletion, add it to the pendingDelete list
+		if (uiElement->pendingToDelete)
+		{
+			pendingDelete.push_back(uiElement);
+		}
+		else {
+			uiElement->Update(dt);
+		}
+	}
+
+	//Now iterates over the pendingDelete list and destroys the uiElement
+	for (const auto uiElement : pendingDelete)
+	{
+		uiElement->CleanUp();
+		UIElementsList.remove(uiElement);
 	}
 
 	return true;

@@ -64,3 +64,9 @@ bool UIButton::Update(float dt)
 
 	return false;
 }
+
+bool UIButton::CleanUp()
+{
+	pendingToDelete = true;
+	return true;
+}

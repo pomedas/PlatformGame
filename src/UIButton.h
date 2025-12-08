@@ -14,6 +14,8 @@ public:
 	// Called each loop iteration
 	bool Update(float dt);
 
+	bool CleanUp() override;
+
 private:
 
 	bool canClick = true;
