@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "tracy/Tracy.hpp"
 
 Enemy::Enemy() : Entity(EntityType::ENEMY)
 {
@@ -58,6 +59,7 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+	ZoneScoped;
 	PerformPathfinding();
 	GetPhysicsValues();
 	Move();

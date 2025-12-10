@@ -22,6 +22,9 @@ public:
 	// Called every frame
 	bool Update(float dt);
 
+	// Called after Update
+	bool PostUpdate();
+
 	// Called before quitting
 	bool CleanUp();
 

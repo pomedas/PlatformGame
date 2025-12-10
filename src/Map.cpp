@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "Physics.h"
 #include "EntityManager.h"
+#include "tracy/Tracy.hpp"
 
 #include <math.h>
 
@@ -34,6 +35,8 @@ bool Map::Start() {
 
 bool Map::Update(float dt)
 {
+	ZoneScoped;
+
     bool ret = true;
 
     if (mapLoaded) {
@@ -93,6 +96,9 @@ bool Map::CleanUp()
 
     // L06: TODO 2: Make sure you clean up any memory allocated from tilesets/map
     for (const auto& tileset : mapData.tilesets) {
+        if (tileset->texture) {
+            Engine::GetInstance().textures->UnLoad(tileset->texture);
+        }
         delete tileset;
     }
     mapData.tilesets.clear();
