@@ -9,6 +9,7 @@
 #include "Physics.h"
 #include "EntityManager.h"
 #include "Map.h"
+#include "tracy/Tracy.hpp"
 
 Player::Player() : Entity(EntityType::PLAYER)
 {
@@ -53,6 +54,7 @@ bool Player::Start() {
 
 bool Player::Update(float dt)
 {
+	ZoneScoped;
 	GetPhysicsValues();
 	Move();
 	Jump();

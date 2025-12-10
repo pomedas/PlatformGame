@@ -6,6 +6,7 @@
 #include "Log.h"
 #include "Item.h"
 #include "Enemy.h"
+#include "tracy/Tracy.hpp"
 
 EntityManager::EntityManager() : Module()
 {
@@ -99,6 +100,8 @@ void EntityManager::AddEntity(std::shared_ptr<Entity> entity)
 
 bool EntityManager::Update(float dt)
 {
+	ZoneScoped;
+
 	bool ret = true;
 
 	//List to store entities pending deletion
@@ -124,4 +127,20 @@ bool EntityManager::Update(float dt)
 	}
 
 	return ret;
+}
+
+bool EntityManager::PostUpdate() {
+
+	//Iterates over the entities and calls Update
+	for (const auto entity : entities)
+	{
+		//If the entity is marked for deletion, add it to the pendingDelete list
+		if (entity->pendingToDelete)
+		{
+			DestroyEntity(entity);
+		}
+	}
+
+	return true;
+
 }

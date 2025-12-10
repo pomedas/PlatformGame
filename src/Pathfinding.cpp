@@ -4,6 +4,7 @@
 #include "Map.h"
 #include "Render.h"
 #include "Scene.h"
+#include "tracy/Tracy.hpp"
 
 Pathfinding::Pathfinding() {
     
@@ -159,6 +160,8 @@ bool Pathfinding::IsWalkable(int x, int y) {
 
 void Pathfinding::PropagateBFS() {
 
+    ZoneScoped;
+
     // L11 TODO 4: Check if we have reach a destination
     bool foundDestination = false;
     if (!frontier.empty()) {
@@ -219,6 +222,8 @@ void Pathfinding::PropagateBFS() {
 
 void Pathfinding::PropagateDijkstra() {
 
+    ZoneScoped;
+
     // L12: TODO 3: Taking BFS as a reference, implement the Dijkstra algorithm
     bool foundDestination = false;
     if (frontierDijkstra.size() > 0) {
@@ -275,6 +280,7 @@ void Pathfinding::PropagateDijkstra() {
 
 void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
 
+    ZoneScoped;
     // L13: TODO 2: Adapt Dijkstra algorithm for AStar. Consider the different heuristics
 
     Vector2D playerPos = Engine::GetInstance().scene.get()->GetPlayerPosition();
