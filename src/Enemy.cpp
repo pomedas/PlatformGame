@@ -58,6 +58,11 @@ bool Enemy::Start() {
 
 bool Enemy::Update(float dt)
 {
+
+	// L19 TODO 5: Use IsOnScreenWorldRect to skip the enemy update if it's not visible
+	if (!Engine::GetInstance().render->IsOnScreenWorldRect(position.getX(), position.getY(), (float)texW, (float)texH, 0))
+		return true;
+
 	PerformPathfinding();
 	GetPhysicsValues();
 	Move();
