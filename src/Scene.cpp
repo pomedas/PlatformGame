@@ -230,6 +230,11 @@ void Scene::LoadLevel1() {
 	std::shared_ptr<Enemy> enemy1 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
 	enemy1->position = Vector2D(384, 672);
 	enemy1->Start(); //L17 Important call Start
+
+	//Create a new enemy 
+	std::shared_ptr<Enemy> enemy2 = std::dynamic_pointer_cast<Enemy>(Engine::GetInstance().entityManager->CreateEntity(EntityType::ENEMY));
+	enemy2->position = Vector2D(1380, 672);
+	enemy2->Start(); //L17 Important call Start
 }
 
 void Scene::UpdateLevel1(float dt) {
