@@ -43,8 +43,14 @@ bool Map::Update(float dt)
         for (const auto& mapLayer : mapData.layers) {
             //L09 TODO 7: Check if the property Draw exist get the value, if it's true draw the lawyer
             if (mapLayer->properties.GetProperty("Draw") != NULL && mapLayer->properties.GetProperty("Draw")->value == true) {
-                for (int i = 0; i < mapData.width; i++) {
-                    for (int j = 0; j < mapData.height; j++) {
+
+                // L19 TODO 3: Compute which tiles of the map are visible inside the camera view
+				Vector2D camPosTile = GetCameraPositionInTiles();
+				Vector2D limits = GetCameraLimitsInTiles(camPosTile);
+
+				// L19 TODO 3: Update the loop to draw only the tiles in the camera view
+                for (int i = camPosTile.getX(); i <= limits.getX(); i++) {
+                    for (int j = camPosTile.getY(); j <= limits.getY(); j++){
 
                         // L07 TODO 9: Complete the draw function
 
@@ -367,6 +373,36 @@ MapLayer* Map::GetNavigationLayer() {
      std::string mapPathName = mapPath + mapFileName;
      mapFileXML.save_file(mapPathName.c_str());
  
+ }
+
+ // L19 TODO 1: Calculate Camera position in Tiles
+ Vector2D Map::GetCameraPositionInTiles() {
+
+     // Gets the camera position in world space. Moving the camera right means drawing the world shifted left. 
+     // Multiplying by -1 converts render offset actual world - space camera position
+     Vector2D camPos = Vector2D(Engine::GetInstance().render->camera.x * -1, Engine::GetInstance().render->camera.y * -1);
+     if (camPos.getX() < 0) camPos.setX(0);
+     if (camPos.getY() < 0) camPos.setY(0);
+
+     // Converts the camera position to map tile coordinates
+     Vector2D camPosTile = WorldToMap(camPos.getX(), camPos.getY());
+
+	 return camPosTile;
+ }
+
+ // L19 TODO 2: Calculate Camera limits in Tiles
+ Vector2D Map::GetCameraLimitsInTiles(Vector2D camPosTile) {
+
+     // Gets the camera size in world space and converts it to map tile coordinates
+     Vector2D camSize = Vector2D(Engine::GetInstance().render->camera.w, Engine::GetInstance().render->camera.h);
+     Vector2D camSizeTile = WorldToMap(camSize.getX(), camSize.getY());
+
+     // Computes the tile range to draw
+     Vector2D limits = Vector2D(camPosTile.getX() + camSizeTile.getX(), camPosTile.getY() + camSizeTile.getY());
+     if (limits.getX() > mapData.width) limits.setX(mapData.width);
+     if (limits.getY() > mapData.height) limits.setY(mapData.height);
+
+	 return limits;
  }
 
 
