@@ -153,6 +153,12 @@ public:
 	//L15 TODO 4: Define a method to save entities to the map XML
     void SaveEntities(std::shared_ptr<Player> player);
 
+	// L19 TODO 1: Calculate Camera position in Tiles
+	Vector2D GetCameraPositionInTiles();
+
+	// L19 TODO 2: Calculate Camera limits in Tiles
+	Vector2D GetCameraLimitsInTiles(Vector2D camPosTile);
+
 public: 
     std::string mapFileName;
     std::string mapPath;

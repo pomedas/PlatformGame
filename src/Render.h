@@ -42,6 +42,9 @@ public:
 	// Set background color
 	void SetBackgroundColor(SDL_Color color);
 
+	// L19 TODO 4: Create a method to know if a rectangle is inside the camera frustum
+	bool IsOnScreenWorldRect(float x, float y, float w, float h, int margin = 0) const;
+
 public:
 
 	SDL_Renderer* renderer;
