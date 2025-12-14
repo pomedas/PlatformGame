@@ -335,6 +335,33 @@ bool Render::DrawText(const char* text, int x, int y, int w, int h, SDL_Color co
 bool Render::IsOnScreenWorldRect(float x, float y, float w, float h, int margin) const
 {
 	bool result = false;
+
+	// --- 1. Compute camera rectangle in WORLD space ---
+
+	// camera.x and camera.y are render offsets (negative world position),
+	// so we negate them to get the camera position in world coordinates.
+	// The margin expands the camera rectangle to activate objects earlier.
+	float camLeft = -camera.x - margin;
+	float camTop = -camera.y - margin;
+
+	// Right and bottom edges of the camera rectangle
+	float camRight = camLeft + camera.w + margin * 2;
+	float camBottom = camTop + camera.h + margin * 2;
+
+	// --- 2. Compute object rectangle in WORLD space ---
+
+	float objLeft = x;
+	float objTop = y;
+	float objRight = x + w;
+	float objBottom = y + h;
+
+	// --- 3. Axis-Aligned Bounding Box (AABB) overlap test ---
+
+	result = objRight >= camLeft &&
+			 objLeft <= camRight &&
+			 objBottom >= camTop &&
+			 objTop <= camBottom; 
+
 	return result;
 }
 
