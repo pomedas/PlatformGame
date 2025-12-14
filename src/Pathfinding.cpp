@@ -278,7 +278,7 @@ void Pathfinding::PropagateAStar(ASTAR_HEURISTICS heuristic) {
     // L13: TODO 2: Adapt Dijkstra algorithm for AStar. Consider the different heuristics
 
     Vector2D playerPos = Engine::GetInstance().scene.get()->GetPlayerPosition();
-    Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX(), (int)playerPos.getY());
+    Vector2D playerPosTile = Engine::GetInstance().map.get()->WorldToMap((int)playerPos.getX() + 5, (int)playerPos.getY() + 5);
 
     bool foundDestination = false;
     if (frontierAStar.size() > 0) {
@@ -406,5 +406,11 @@ int Pathfinding::Find(std::list<Vector2D> vector, Vector2D elem)
 
     if (found) return index;
     else return -1;
+
+}
+
+bool Pathfinding::CanPropagateAStar(Vector2D destinationTile) {
+
+    return (!frontierAStar.empty() && IsWalkable(destinationTile.getX(), destinationTile.getY()) && pathTiles.empty());
 
 }

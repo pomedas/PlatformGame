@@ -34,6 +34,8 @@ public:
     // L13: A* Pathfinding methods
     void PropagateAStar(ASTAR_HEURISTICS heuristic);
 
+    bool CanPropagateAStar(Vector2D destinationTile);
+
 private:
     int Find(std::list<Vector2D> vector, Vector2D elem);
 
